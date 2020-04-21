@@ -8,7 +8,6 @@ OpcReadNode[] commands = new OpcReadNode[] {
     new OpcReadNode("ns=2;s=Machine/Job/Speed")
 };
 
-// DOC
 IEnumerable<OpcValue> job = client.ReadNodes(commands);
 
 // DOC
