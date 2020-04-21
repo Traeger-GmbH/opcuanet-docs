@@ -1,4 +1,5 @@
 // DOC
+
 OpcValue isRunning = client.ReadNode("ns=2;s=Machine/IsRunning");
 
 // DOC
