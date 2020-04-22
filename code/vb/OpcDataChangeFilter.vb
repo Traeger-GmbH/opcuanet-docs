@@ -1,19 +1,19 @@
 'DOC
 Dim subscription As OpcSubscription = client.SubscribeDataChange( _
-                "ns=2;s=Machine/IsRunning", _
-                OpcDataChangeTrigger.StatusValueTimestamp, _
-                AddressOf HandleDataChanged)
+        "ns=2;s=Machine/IsRunning", _
+        OpcDataChangeTrigger.StatusValueTimestamp, _
+        AddressOf HandleDataChanged)
 
 'DOC
 Dim commands As OpcSubscribeDataChange() = New OpcSubscribeDataChange() { _
-        New OpcSubscribeDataChange( _
-                "ns=2;s=Machine/IsRunning", _
-                OpcDataChangeTrigger.StatusValueTimestamp, _
-                AddressOf HandleDataChanged), _
-        New OpcSubscribeDataChange( _
-                "ns=2;s=Machine/Job/Speed", _
-                OpcDataChangeTrigger.StatusValueTimestamp, _
-                AddressOf HandleDataChanged) _
+    New OpcSubscribeDataChange( _
+            "ns=2;s=Machine/IsRunning", _
+            OpcDataChangeTrigger.StatusValueTimestamp, _
+            AddressOf HandleDataChanged), _
+    New OpcSubscribeDataChange( _
+            "ns=2;s=Machine/Job/Speed", _
+            OpcDataChangeTrigger.StatusValueTimestamp, _
+            AddressOf HandleDataChanged) _
 }
 
 Dim subscription As OpcSubscription = client.SubscribeNodes(commands)
@@ -46,14 +46,14 @@ Dim subscriptionA As OpcSubscription = client.SubscribeDataChange( _
 'or
 
 Dim commands As OpcSubscribeDataChange() = New OpcSubscribeDataChange() { _
-        New OpcSubscribeDataChange( _
-                "ns=2;s=Machine/IsRunning", _
-                filter, _
-                AddressOf HandleDataChanged), _
-        New OpcSubscribeDataChange( _
-                "ns=2;s=Machine/Job/Speed", _
-                filter, _
-                HandleDataChanged) _
+    New OpcSubscribeDataChange( _
+            "ns=2;s=Machine/IsRunning", _
+            filter, _
+            AddressOf HandleDataChanged), _
+    New OpcSubscribeDataChange( _
+            "ns=2;s=Machine/Job/Speed", _
+            filter, _
+            HandleDataChanged) _
 }
 
 Dim subscriptionB As OpcSubscription = client.SubscribeNodes(commands)
