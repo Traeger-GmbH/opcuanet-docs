@@ -65,6 +65,7 @@ Finally
     OpcFileMethods.Close(client, "ns=2;s=Machine/Report", handle)
 End Try
 
+
 'DOC
 If OpcFileMethods.IsFileNode(client, "ns=2;s=Machine/Report") Then
     'Your code to operate on the file node.
