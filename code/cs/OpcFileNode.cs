@@ -12,6 +12,7 @@ using (var stream = OpcFile.OpenRead(client, "ns=2;s=Machine/Report")) {
         Console.WriteLine(reader.ReadLine());
 }
 
+
 // DOC
 using (var stream = OpcFile.OpenWrite(client, "ns=2;s=Machine/Report")) {
     var writer = new StreamWriter(stream);
