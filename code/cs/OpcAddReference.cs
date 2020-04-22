@@ -1,8 +1,8 @@
 // DOC
 client.AddReference(
-    "ns=2;s=Machines/MAC01",
-    targetNodeId: "ns=2;s=Plant",
-    targetNodeCategory: OpcNodeCategory.Object);
+        "ns=2;s=Machines/MAC01",
+        targetNodeId: "ns=2;s=Plant",
+        targetNodeCategory: OpcNodeCategory.Object);
 
 // DOC
 client.AddReference(
