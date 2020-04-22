@@ -21,7 +21,7 @@ private static void HandleDataChanged(
     OpcMonitoredItem item = (OpcMonitoredItem)sender;
 
     Console.WriteLine(
-            $"Data Change from NodeId '{0}': {1}",
+            "Data Change from NodeId '{0}': {1}",
             item.NodeId,
             e.Item.Value);
 }
@@ -89,5 +89,9 @@ private static void HandleDataChanged(
 {
     // The tag property contains the previously set value.
     OpcMonitoredItem item = (OpcMonitoredItem)sender;
-    Console.WriteLine($"Data Change from Index {item.Tag}: {e.Item.Value}");
+    
+    Console.WriteLine(
+            "Data Change from Index {0}: {1}",
+            item.Tag,
+            e.Item.Value);
 }
