@@ -3,7 +3,7 @@ Imports Opc.UaFx.Classic
 Imports Opc.UaFx.Client
 
 'DOC
-Dim client = As New OpcClient("opc.com://localhost:4840/<progId>/<classId>")
+Dim client As New OpcClient("opc.com://localhost:4840/<progId>/<classId>")
 
 'DOC
 client.Connect()
