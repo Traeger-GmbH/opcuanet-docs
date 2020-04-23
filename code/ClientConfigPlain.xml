@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<OpcApplicationConfiguration
+    xmlns="http://opcfoundation.org/UA/SDK/Configuration.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ua="http://opcfoundation.org/UA/2008/02/Types.xsd"
+    schemaLocation="AppConfig.xsd">
+  <ApplicationName>MyClient Configured via XML</ApplicationName>
+  <ApplicationUri>http://myclient/application</ApplicationUri>
+  <ProductUri>http://myclient/product</ProductUri>
+  <ApplicationType>Client_1</ApplicationType>
+
+  <SecurityConfiguration>
+    <ApplicationCertificate>
+      <StoreType>Directory</StoreType>
+      <StorePath>.\CertificateStores\App</StorePath>
+      <SubjectName>CN=MyClient, C=US, S=Arizona, O=YourCompany, DC=localhost</SubjectName>
+      <!-- <Thumbprint>3a35fb798fc6dee8a7e7e4652b0e28fc14c6ee0f</Thumbprint> -->
+    </ApplicationCertificate>
+
+    <TrustedIssuerCertificates>
+      <StoreType>Directory</StoreType>
+      <StorePath>.\CertificateStores\Trusted</StorePath>
+    </TrustedIssuerCertificates>
+
+    <TrustedPeerCertificates>
+      <StoreType>Directory</StoreType>
+      <StorePath>.\CertificateStores\Trusted</StorePath>
+    </TrustedPeerCertificates>
+
+    <NonceLength>32</NonceLength>
+
+    <RejectedCertificateStore>
+      <StoreType>Directory</StoreType>
+      <StorePath>.\CertificateStores\Rejected</StorePath>
+    </RejectedCertificateStore>
+  </SecurityConfiguration>
+
+  <TransportQuotas>
+    <OperationTimeout>120000</OperationTimeout>
+    <MaxStringLength>1048576</MaxStringLength>
+    <MaxByteStringLength>4194304</MaxByteStringLength>
+    <MaxArrayLength>65535</MaxArrayLength>
+    <MaxMessageSize>4194304</MaxMessageSize>
+    <MaxBufferSize>65535</MaxBufferSize>
+    <ChannelLifetime>300000</ChannelLifetime>
+    <SecurityTokenLifetime>3600000</SecurityTokenLifetime>
+  </TransportQuotas>
+
+  <ClientConfiguration>
+    <DefaultSessionTimeout>600000</DefaultSessionTimeout>
+
+    <WellKnownDiscoveryUrls>
+      <ua:String>opc.tcp://{0}:4840/UADiscovery</ua:String>
+      <ua:String>http://{0}:52601/UADiscovery</ua:String>
+      <ua:String>http://{0}/UADiscovery/Default.svc</ua:String>
+    </WellKnownDiscoveryUrls>
+
+    <DiscoveryServers></DiscoveryServers>
+    <MinSubscriptionLifetime>10000</MinSubscriptionLifetime>
+  </ClientConfiguration>
+
+  <TraceConfiguration>
+    <OutputFilePath>.\MyClient.log</OutputFilePath>
+    <DeleteOnLoad>true</DeleteOnLoad>
+    <TraceMasks>0</TraceMasks>
+  </TraceConfiguration>
+
+  <DisableHiResClock>true</DisableHiResClock>
+</OpcApplicationConfiguration>
