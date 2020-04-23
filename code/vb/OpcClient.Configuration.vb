@@ -13,7 +13,7 @@ client.ApplicationUri = "http://my.clientapp.uri/"
 
 'DOC
 client.SessionTimeout = 30000           'Default: 60000
-client.SessionName = "My Session Name"  'Default: null
+client.SessionName = "My Session Name"  'Default: Nothing
 
 'DOC
 client.OperationTimeout = 10000          'Default: 60000
@@ -89,7 +89,7 @@ End Using
 client.Security.VerifyServersCertificateDomains = True
 
 'DOC
-client.Security.AutoAcceptUntrustedCertificates = false
+client.Security.AutoAcceptUntrustedCertificates = False
 
 'DOC
 AddHandler client.CertificateValidationFailed, AddressOf HandleCertificateValidationFailed
