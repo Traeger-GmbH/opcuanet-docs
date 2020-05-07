@@ -158,19 +158,19 @@ Friend Structure MyDataTypeWithOptionalFields
     Public OptionalField2 As Integer
 
     'Existence-Indicator-Bit is Bit3 (bit 2 is unused) in the encoding mask.
-    <OpcDataTypeMemberSwitch(bit:=3)>
+    <OpcDataTypeMemberSwitch(3)>
     Public OptionalField3 As Byte
 
     Public FieldD As Boolean
 
     ''OptionalField3' exists only if the value of 'FieldD' is equals 'true'.
     <OpcDataTypeMemberSwitch("FieldD")>
-    Public OptionalField3 As String
+    Public OptionalField4 As String
 
     Public FieldE As Integer
 
     ''OptionalField4' exists only if the value of 'FieldE' is greater than '42'.
-    <OpcDataTypeMemberSwitch("FieldE", value:=42, operand:=OpcMemberSwitchOperator.GreaterThan)>
-    Public OptionalField4 As String
+    <OpcDataTypeMemberSwitch("FieldE", 42, operand:=OpcMemberSwitchOperator.GreaterThan)>
+    Public OptionalField5 As String
 End Structure
 
