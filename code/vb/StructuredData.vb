@@ -163,13 +163,13 @@ Friend Structure MyDataTypeWithOptionalFields
 
     Public FieldD As Boolean
 
-    ''OptionalField3' exists only if the value of 'FieldD' is equals 'true'.
+    ''OptionalField4' exists only if the value of 'FieldD' is equals 'true'.
     <OpcDataTypeMemberSwitch("FieldD")>
     Public OptionalField4 As String
 
     Public FieldE As Integer
 
-    ''OptionalField4' exists only if the value of 'FieldE' is greater than '42'.
+    ''OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
     <OpcDataTypeMemberSwitch("FieldE", 42, operand:=OpcMemberSwitchOperator.GreaterThan)>
     Public OptionalField5 As String
 End Structure
