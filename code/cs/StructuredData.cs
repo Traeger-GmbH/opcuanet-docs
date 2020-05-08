@@ -171,6 +171,6 @@ internal struct MyDataTypeWithOptionalFields
     public int FieldE;
 
     // 'OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
-    [OpcDataTypeMemberSwitch("FieldE", value: 42, operand: OpcMemberSwitchOperator.GreaterThan)]
+    [OpcDataTypeMemberSwitch("FieldE", value: 42, @operator: OpcMemberSwitchOperator.GreaterThan)]
     public string OptionalField5;
 }
