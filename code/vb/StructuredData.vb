@@ -170,7 +170,7 @@ Friend Structure MyDataTypeWithOptionalFields
     Public FieldE As Integer
 
     ''OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
-    <OpcDataTypeMemberSwitch("FieldE", 42, operand:=OpcMemberSwitchOperator.GreaterThan)>
+    <OpcDataTypeMemberSwitch("FieldE", 42, OpcMemberSwitchOperator.GreaterThan)>
     Public OptionalField5 As String
 End Structure
 
