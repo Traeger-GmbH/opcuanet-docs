@@ -164,13 +164,13 @@ internal struct MyDataTypeWithOptionalFields
 
     public bool FieldD;
 
-    // 'OptionalField3' exists only if the value of 'FieldD' is equals 'true'.
+    // 'OptionalField4' exists only if the value of 'FieldD' is equals 'true'.
     [OpcDataTypeMemberSwitch("FieldD")]
-    public string OptionalField3;
+    public string OptionalField4;
 
     public int FieldE;
 
-    // 'OptionalField4' exists only if the value of 'FieldE' is greater than '42'.
-    [OpcDataTypeMemberSwitch("FieldE", value: 42, operand: OpcMemberSwitchOperator.GreaterThan)]
-    public string OptionalField4;
+    // 'OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
+    [OpcDataTypeMemberSwitch("FieldE", value: 42, @operator: OpcMemberSwitchOperator.GreaterThan)]
+    public string OptionalField5;
 }

@@ -5,7 +5,7 @@ client.SubscribeEvent(OpcObjectTypes.Server, AddressOf HandleGlobalEvents)
 Private Shared Sub HandleGlobalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Console.WriteLine(e.[Event].Message)
+    Console.WriteLine(e.Event.Message)
 End Sub
 
 
@@ -13,7 +13,7 @@ End Sub
 Private Shared Sub HandleGlobalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim alarm = TryCast(e.[Event], OpcAlarmCondition)
+    Dim alarm = TryCast(e.Event, OpcAlarmCondition)
 
     If alarm IsNot Nothing Then
         Console.WriteLine("Alarm: " & alarm.Message)
@@ -24,13 +24,13 @@ End Sub
 'Define an attribute operand using the identifier of the type which defines the
 'attribute / property including the name of the attribute / property to evaluate
 'by the operand.
-Dim severity = New OpcSimpleAttributeOperand(OpcEventTypes.[Event], "Severity")
+Dim severity = New OpcSimpleAttributeOperand(OpcEventTypes.Event, "Severity")
 Dim conditionName = New OpcSimpleAttributeOperand(OpcEventTypes.Condition, "ConditionName")
 
-Dim filter = OpcFilter.[Using](client) _
+Dim filter = OpcFilter.Using(client) _
         .FromEvents(OpcEventTypes.AlarmCondition) _
-        .Where(severity > OpcEventSeverity.Medium And conditionName.[Like]("Temperature")) _
-        .[Select]()
+        .Where(severity > OpcEventSeverity.Medium And conditionName.Like("Temperature")) _
+        .Select()
 
 client.SubscribeEvent(
         OpcObjectTypes.Server,
@@ -38,16 +38,16 @@ client.SubscribeEvent(
         AddressOf HandleGlobalEvents)
 
 'DOC
-Dim severity = New OpcSimpleAttributeOperand(OpcEventTypes.[Event], "Severity")
+Dim severity = New OpcSimpleAttributeOperand(OpcEventTypes.Event, "Severity")
 Dim conditionName = New OpcSimpleAttributeOperand(OpcEventTypes.Condition, "ConditionName")
 
-Dim filter = OpcFilter.[Using](client) _
+Dim filter = OpcFilter.Using(client) _
         .FromEvents( _
             OpcEventTypes.AlarmCondition, _
             OpcEventTypes.ExclusiveLimitAlarm, _
             OpcEventTypes.DialogCondition) _
-        .Where(severity > OpcEventSeverity.Medium And conditionName.[Like]("Temperature")) _
-        .[Select]()
+        .Where(severity > OpcEventSeverity.Medium And conditionName.Like("Temperature")) _
+        .Select()
 
 client.SubscribeEvent(
         OpcObjectTypes.Server,
@@ -61,7 +61,7 @@ client.SubscribeEvent(machineNodeId, AddressOf HandleLocalEvents)
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Console.WriteLine(e.[Event].Message)
+    Console.WriteLine(e.Event.Message)
 End Sub
 
 
@@ -77,7 +77,7 @@ subscription.RefreshConditions()
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim condition = TryCast(e.[Event], OpcCondition)
+    Dim condition = TryCast(e.Event, OpcCondition)
 
     If condition.IsRetained Then
         Console.Write((If(condition.ClientUserId, "Comment")) & ":")
@@ -90,7 +90,7 @@ End Sub
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim condition = TryCast(e.[Event], OpcCondition)
+    Dim condition = TryCast(e.Event, OpcCondition)
 
     If condition.IsEnabled AndAlso condition.Severity < OpcEventSeverity.Medium Then
         condition.Disable(client)
@@ -101,7 +101,7 @@ End Sub
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim condition = TryCast(e.[Event], OpcCondition)
+    Dim condition = TryCast(e.Event, OpcCondition)
 
     If condition IsNot Nothing Then
         condition.AddComment(client, "Evaluated by me!")
@@ -112,7 +112,7 @@ End Sub
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim condition = TryCast(e.[Event], OpcDialogCondition)
+    Dim condition = TryCast(e.Event, OpcDialogCondition)
 
     If condition IsNot Nothing AndAlso condition.IsActive Then
         Console.WriteLine(condition.Prompt)
@@ -160,7 +160,7 @@ End Sub
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim condition = TryCast(e.[Event], OpcAcknowledgeableCondition)
+    Dim condition = TryCast(e.Event, OpcAcknowledgeableCondition)
 
     If condition IsNot Nothing AndAlso Not condition.IsAcked Then
         Console.WriteLine("Acknowledgment is required for condtion: {0}", condition.ConditionName)
@@ -176,7 +176,7 @@ End Sub
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim alarm = TryCast(e.[Event], OpcAlarmCondition)
+    Dim alarm = TryCast(e.Event, OpcAlarmCondition)
 
     If alarm IsNot Nothing Then
         Console.Write("Alarm {0} is", alarm.ConditionName)
@@ -189,7 +189,7 @@ End Sub
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim alarm = TryCast(e.[Event], OpcDiscreteAlarm)
+    Dim alarm = TryCast(e.Event, OpcDiscreteAlarm)
 
     If alarm IsNot Nothing Then
         If TypeOf alarm Is OpcTripAlarm Then
@@ -204,7 +204,7 @@ End Sub
 Private Shared Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
-    Dim alarm = TryCast(e.[Event], OpcLimitAlarm)
+    Dim alarm = TryCast(e.Event, OpcLimitAlarm)
 
     If alarm IsNot Nothing Then
         Console.Write(alarm.LowLowLimit)

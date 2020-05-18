@@ -8,7 +8,7 @@ Opc.UaFx.Licenser.LicenseKey = "<insert your license code here>";
 ILicenseInfo license = Opc.UaFx.Client.Licenser.LicenseInfo;
  
 if (license.IsExpired)
-    Console.WriteLine("The OPA UA Framework Advanced license is expired!");
+    Console.WriteLine("The OPA UA SDK license is expired!");
 
 
 // DOC

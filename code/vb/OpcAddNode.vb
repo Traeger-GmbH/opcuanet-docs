@@ -99,7 +99,7 @@ client.AddVariableNode(OpcVariableType.XYArrayItem, "Coordinates")
 
 'DOC
 'Declare Job Type
-Dim jobType = OpcAddObjectNode.OfType(OpcNodeId.[Of]("ns=2;s=Types/JobType"))
+Dim jobType = OpcAddObjectNode.OfType(OpcNodeId.Of("ns=2;s=Types/JobType"))
 
 client.AddNodes( _
         jobType.Create("JOB001", nodeId:=OpcNodeId.Null, parentNodeId:=jobsNodeId), _
@@ -110,7 +110,7 @@ client.AddNodes( _
 Dim scheduleNodeId = OpcNodeId.Parse("ns=2;s=Machine/JOB002/Schedule")
 
 'Declare Shift Time Type
-Dim shiftTimeType = OpcAddVariableNode.OfType(OpcNodeId.[Of]("ns=2;s=Types/ShiftTimeType"))
+Dim shiftTimeType = OpcAddVariableNode.OfType(OpcNodeId.Of("ns=2;s=Types/ShiftTimeType"))
 
 Dim result As OpcAddNodeResult = client.AddNode(New OpcAddObjectNode( _
         "ShiftPlanning", _

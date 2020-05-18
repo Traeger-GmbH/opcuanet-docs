@@ -25,7 +25,7 @@ client.WriteNode("ns=2;s=Machine/Operator", staff)
 client.UseDynamic = True
 client.Connect()
 
-Dim staff As OpcDataObject = client.ReadNode("ns=2;s=Machine/Operator").[As](Of OpcDataObject)()
+Dim staff As OpcDataObject = client.ReadNode("ns=2;s=Machine/Operator").As(Of OpcDataObject)()
 
 'Access the 'Name' and 'ID' field of the data without to declare the data type itself.
 'Just use the field names known as the 'key' to access the according field value.
@@ -79,7 +79,7 @@ End Class
 
 'DOC
 client.Connect()
-Dim staff As Staff = client.ReadNode("ns=2;s=Machine/Operator").[As](Of Staff)()
+Dim staff As Staff = client.ReadNode("ns=2;s=Machine/Operator").As(Of Staff)()
 
 'Access the 'Name' and 'ID' field of the data with the declared the data type.
 Console.WriteLine("Name: {0}", staff.Name)
@@ -116,7 +116,7 @@ Dim variableNode As OpcVariableNodeInfo = TryCast(node, OpcVariableNodeInfo)
 
 If variableNode IsNot Nothing Then
     Dim dataTypeId As OpcNodeId = variableNode.DataTypeId
-    Dim dataType As OpcDataTypeInfo = client.GetDataTypeSystem().[GetType](dataTypeId)
+    Dim dataType As OpcDataTypeInfo = client.GetDataTypeSystem().GetType(dataTypeId)
 
     Console.WriteLine(dataType.TypeId)
     Console.WriteLine(dataType.Encoding)
@@ -135,7 +135,7 @@ If variableNode IsNot Nothing Then
     Console.WriteLine( _
             vbTab & "[OpcDataTypeEncoding(""{0}"", NamespaceUri = ""{1}"")]", _
             dataType.Encoding.Id.ToString(OpcNodeIdFormat.Foundation), _
-            dataType.Encoding.[Namespace].Value)
+            dataType.Encoding.Namespace.Value)
 End If
 
 'DOC
@@ -158,19 +158,19 @@ Friend Structure MyDataTypeWithOptionalFields
     Public OptionalField2 As Integer
 
     'Existence-Indicator-Bit is Bit3 (bit 2 is unused) in the encoding mask.
-    <OpcDataTypeMemberSwitch(bit:=3)>
+    <OpcDataTypeMemberSwitch(3)>
     Public OptionalField3 As Byte
 
     Public FieldD As Boolean
 
-    ''OptionalField3' exists only if the value of 'FieldD' is equals 'true'.
+    ''OptionalField4' exists only if the value of 'FieldD' is equals 'true'.
     <OpcDataTypeMemberSwitch("FieldD")>
-    Public OptionalField3 As String
+    Public OptionalField4 As String
 
     Public FieldE As Integer
 
-    ''OptionalField4' exists only if the value of 'FieldE' is greater than '42'.
-    <OpcDataTypeMemberSwitch("FieldE", value:=42, operand:=OpcMemberSwitchOperator.GreaterThan)>
-    Public OptionalField4 As String
+    ''OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
+    <OpcDataTypeMemberSwitch("FieldE", 42, OpcMemberSwitchOperator.GreaterThan)>
+    Public OptionalField5 As String
 End Structure
 
