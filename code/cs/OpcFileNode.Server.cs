@@ -1,5 +1,5 @@
 // DOC
-var protocollFileNode = new OpcFileNode(
+var protocolFileNode = new OpcFileNode(
         machineNode,
         "Protocol.txt",
         new FileInfo(@"..\Protocol.log"));

@@ -1,5 +1,5 @@
 'DOC
-Dim protocollFileNode = New OpcFileNode( _
+Dim protocolFileNode = New OpcFileNode( _
         machineNode, _
         "Protocol.txt", _
         New FileInfo("..\Protocol.log"))
