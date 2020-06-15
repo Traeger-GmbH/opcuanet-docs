@@ -13,8 +13,8 @@ private OpcVariableValue WriteToNode(
 
 // Inline change type of value to the expected type.
 private OpcVariableValue WriteToNode(
-    OpcWriteVariableValueContext context,
-    OpcVariableValue value)
+        OpcWriteVariableValueContext context,
+        OpcVariableValue value)
 {
     if (!(value.Value is short)) {
         value = new OpcVariableValue(
