@@ -33,3 +33,15 @@ protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection 
 // DOC
 // Note: An enumerable of node managers can be also passed.
 var server = new OpcServer("opc.tcp://localhost:4840/", new MyNodeManager());
+
+// DOC
+protected override bool IsNodeAccessible(OpcContext context, OpcNodeId viewId, IOpcNodeInfo node)
+{
+    if (context.Identity.DisplayName == "a")
+        return true;
+
+    if (context.Identity.DisplayName == "b" && node.Name.Value == "Speed")
+        return false;
+
+    return base.IsNodeAccessible(context, viewId, node);
+}
