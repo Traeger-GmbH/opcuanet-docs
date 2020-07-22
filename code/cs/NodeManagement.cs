@@ -57,3 +57,13 @@ protected override bool IsNodeAccessible(OpcContext context, OpcNodeId viewId, I
 
     return base.IsNodeAccessible(context, viewId, node);
 }
+
+// DOC
+var variableNode = new OpcVariableNode(...);
+
+variableNode.Status.Update(OpcStatusCode.Good);
+variableNode.Timestamp = DateTime.UtcNow;
+variableNode.Value = ...;
+
+variableNode.ApplyChanges(...);
+
