@@ -33,3 +33,16 @@ End Function
 'DOC
 'Note: An enumerable of node managers can be also passed.
 Dim server = New OpcServer("opc.tcp://localhost:4840/", New MyNodeManager())
+
+'DOC
+Protected Overrides Function IsNodeAccessible(ByVal context As OpcContext, ByVal viewId As OpcNodeId, ByVal node As IOpcNodeInfo) As Boolean
+    If context.Identity.DisplayName = "a" Then
+        Return True
+    End If
+ 
+    If context.Identity.DisplayName = "b" AndAlso node.Name.Value = "Speed" Then
+        Return False
+    End If
+ 
+    Return MyBase.IsNodeAccessible(context, viewId, node)
+End Function
