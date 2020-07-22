@@ -35,6 +35,18 @@ End Function
 Dim server = New OpcServer("opc.tcp://localhost:4840/", New MyNodeManager())
 
 'DOC
+Protected Overrides Iterator Function CreateNodes(ByVal references As OpcNodeReferenceCollection) As IEnumerable(Of IOpcNode)
+    Dim machine = New OpcObjectNode( _
+            "Machine", _
+            New OpcDataVariableNode(Of Integer)("Speed", value:=123), _
+            New OpcDataVariableNode(Of String)("Job", value:="JOB0815"))
+
+    references.Add(machine, OpcObjectTypes.ObjectsFolder)
+    Yield machine
+End Function
+
+
+'DOC
 Protected Overrides Function IsNodeAccessible(ByVal context As OpcContext, ByVal viewId As OpcNodeId, ByVal node As IOpcNodeInfo) As Boolean
     If context.Identity.DisplayName = "a" Then
         Return True
