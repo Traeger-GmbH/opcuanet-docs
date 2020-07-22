@@ -35,6 +35,19 @@ protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection 
 var server = new OpcServer("opc.tcp://localhost:4840/", new MyNodeManager());
 
 // DOC
+protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection references)
+{
+    var machine = new OpcObjectNode(
+            "Machine",
+            new OpcDataVariableNode<int>("Speed", value: 123),
+            new OpcDataVariableNode<string>("Job", value: "JOB0815"));
+
+    references.Add(machine, OpcObjectTypes.ObjectsFolder);
+    yield return machine;
+}
+
+
+// DOC
 protected override bool IsNodeAccessible(OpcContext context, OpcNodeId viewId, IOpcNodeInfo node)
 {
     if (context.Identity.DisplayName == "a")
