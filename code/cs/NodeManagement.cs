@@ -46,7 +46,6 @@ protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection 
     yield return machine;
 }
 
-
 // DOC
 protected override bool IsNodeAccessible(OpcContext context, OpcNodeId viewId, IOpcNodeInfo node)
 {
