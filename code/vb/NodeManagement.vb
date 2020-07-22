@@ -58,3 +58,13 @@ Protected Overrides Function IsNodeAccessible(ByVal context As OpcContext, ByVal
  
     Return MyBase.IsNodeAccessible(context, viewId, node)
 End Function
+
+
+'DOC
+Dim variableNode = New OpcVariableNode(...)
+
+variableNode.Status.Update(OpcStatusCode.Good)
+variableNode.Timestamp = DateTime.UtcNow
+variableNode.Value = ...
+
+variableNode.ApplyChanges(...)
