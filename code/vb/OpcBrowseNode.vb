@@ -40,3 +40,29 @@ If childNode.Category = OpcNodeCategory.Method Then
         'Your code to operate on each argument.
     Next
 End If
+
+'DOC
+'Create a browse command to browse all hierarchical references.
+Dim browse = New OpcBrowseNode( _
+        nodeId:=OpcNodeId.Parse("ns=2;s=Machine"), _
+        degree:=OpcBrowseNodeDegree.Generation)
+
+'Create a browse command to browse specific types of references.
+Dim browse = New OpcBrowseNode( _
+        nodeId:=OpcNodeId.Parse("ns=2;s=Machine"), _
+        degree:=OpcBrowseNodeDegree.Generation, _
+        referenceTypes:={ _
+            OpcReferenceType.Organizes, _
+            OpcReferenceType.HasComponent, _
+            OpcReferenceType.HasProperty _
+        })
+
+'Reduce browsing to the smallest possible amount of data.
+browse.Options = OpcBrowseOptions.IncludeReferenceTypeId _
+        Or OpcBrowseOptions.IncludeBrowseName
+
+Dim node = client.BrowseNode(browse)
+
+For Each childNode In node.Children()
+    'Continue recursively...
+Next
