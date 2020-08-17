@@ -40,3 +40,29 @@ if (childNode.Category == OpcNodeCategory.Method) {
         // Your code to operate on each argument.
     }
 }
+
+// DOC
+// Create a browse command to browse all hierarchical references.
+var browse = new OpcBrowseNode(
+        nodeId: OpcNodeId.Parse("ns=2;s=Machine"),
+        degree: OpcBrowseNodeDegree.Generation);
+
+// Create a browse command to browse specific types of references.
+var browse = new OpcBrowseNode(
+        nodeId: OpcNodeId.Parse("ns=2;s=Machine"),
+        degree: OpcBrowseNodeDegree.Generation,
+        referenceTypes: new[] {
+            OpcReferenceType.Organizes,
+            OpcReferenceType.HasComponent,
+            OpcReferenceType.HasProperty
+        });
+
+// Reduce browsing to the smallest possible amount of data.
+browse.Options = OpcBrowseOptions.IncludeReferenceTypeId
+        | OpcBrowseOptions.IncludeBrowseName;
+
+var node = client.BrowseNode(browse);
+
+foreach (var childNode in node.Children()) {
+    // Continue recursively...
+}
