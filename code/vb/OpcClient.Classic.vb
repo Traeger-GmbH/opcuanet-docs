@@ -1,6 +1,6 @@
 'DOC
-Imports Opc.UaFx.Classic
 Imports Opc.UaFx.Client
+Imports Opc.UaFx.Client.Classic
 
 'DOC
 Dim client As New OpcClient("opc.com://localhost:4840/<progId>/<classId>")
