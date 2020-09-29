@@ -1,6 +1,6 @@
 // DOC
-using Opc.UaFx.Classic;
 using Opc.UaFx.Client;
+using Opc.UaFx.Client.Classic;
 
 // DOC
 var client = new OpcClient("opc.com://localhost:4840/<progId>/<classId>");
