@@ -3,42 +3,42 @@ Dim server As New OpcServer(...)
 ' ...
 
 server.ReportEvent(
-		OpcEventSeverity.Medium, 
-		"Recognized a medium urgent situation.")
+        OpcEventSeverity.Medium, 
+        "Recognized a medium urgent situation.")
 
 ' Same usage as before + arguments support.
 server.ReportEvent(
-		OpcEventSeverity.Medium, 
-		"Recognized a medium urgent situation at machine {0}.", 
-		machineId)
+        OpcEventSeverity.Medium, 
+        "Recognized a medium urgent situation at machine {0}.", 
+        machineId)
 
 ' Same usage as before + source node.
 server.ReportEvent(
-		sourceNode, 
-		OpcEventSeverity.Medium, 
-		"Recognized a medium urgent situation.")
+        sourceNode, 
+        OpcEventSeverity.Medium, 
+        "Recognized a medium urgent situation.")
 
 ' Same usage as before + arguments support.
 server.ReportEvent(
-		sourceNode, 
-		OpcEventSeverity.Medium, 
-		"Recognized a medium urgent situation at machine {0}.", 
-		machineId)
+        sourceNode, 
+        OpcEventSeverity.Medium, 
+        "Recognized a medium urgent situation at machine {0}.", 
+        machineId)
 
 ' Same usage as before + explicit source information.
 server.ReportEvent(
-		sourceNodeId, 
-		sourceNodeName, 
-		OpcEventSeverity.Medium, 
-		"Recognized a medium urgent situation.")
+        sourceNodeId, 
+        sourceNodeName, 
+        OpcEventSeverity.Medium, 
+        "Recognized a medium urgent situation.")
 
 ' Same usage as before + arguments support.
 server.ReportEvent(
-		sourceNodeId, 
-		sourceNodeName, 
-		OpcEventSeverity.Medium, 
-		"Recognized a medium urgent situation at machine {0}.", 
-		machineId)
+        sourceNodeId, 
+        sourceNodeName, 
+        OpcEventSeverity.Medium, 
+        "Recognized a medium urgent situation at machine {0}.", 
+        machineId)
 
 ' DOC
 Dim activatedEvent As New OpcEventNode(machineOne, "Activated")
@@ -70,7 +70,7 @@ AddHandler machineOne.QueryEventsCallback, Sub(context, events)
     ' Ensure that an re-entrance upon notifier cross-references will not add
     ' events to the collection which are already stored in.
     If events.Count <> 0 Then Return
-	
+    
     events.Add(activatedEvent.CreateEvent(context))
 End Sub
 
@@ -125,8 +125,8 @@ AddHandler outOfMaterial.RespondCallback, AddressOf HandleOutOfMaterialResponse
 ...
 
 Private Function HandleOutOfMaterialResponse(
-		context As OpcNodeContext(Of OpcDialogConditionNode), 
-		selectedResponse As Integer) As OpcStatusCode
+        context As OpcNodeContext(Of OpcDialogConditionNode), 
+        selectedResponse As Integer) As OpcStatusCode
     ' Handle the response
     If context.Node.OkResponse = selectedResponse Then
         ContinueJob()
@@ -184,7 +184,7 @@ Dim z As New OpcTripAlarmNode(machineOne, "tripAlert")
 
 ' DOC
 Dim positionLimit As New OpcLimitAlarmNode(
-		machineOne, "PositionLimit", OpcLimitAlarmStates.HighHigh Or OpcLimitAlarmStates.LowLow)
+        machineOne, "PositionLimit", OpcLimitAlarmStates.HighHigh Or OpcLimitAlarmStates.LowLow)
 
 positionLimit.HighHighLimit = 120 ' e.g. mm
 positionLimit.LowLowLimit = 0 ' e.g. mm
