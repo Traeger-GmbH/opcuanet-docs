@@ -2,42 +2,42 @@
 Dim server As New OpcServer(...)
 ' ...
 
-server.ReportEvent(
-        OpcEventSeverity.Medium, 
+server.ReportEvent( _
+        OpcEventSeverity.Medium, _
         "Recognized a medium urgent situation.")
 
 ' Same usage as before + arguments support.
-server.ReportEvent(
-        OpcEventSeverity.Medium, 
-        "Recognized a medium urgent situation at machine {0}.", 
+server.ReportEvent( _
+        OpcEventSeverity.Medium, _
+        "Recognized a medium urgent situation at machine {0}.", _
         machineId)
 
 ' Same usage as before + source node.
-server.ReportEvent(
-        sourceNode, 
-        OpcEventSeverity.Medium, 
+server.ReportEvent( _
+        sourceNode, _
+        OpcEventSeverity.Medium, _
         "Recognized a medium urgent situation.")
 
 ' Same usage as before + arguments support.
-server.ReportEvent(
-        sourceNode, 
-        OpcEventSeverity.Medium, 
-        "Recognized a medium urgent situation at machine {0}.", 
+server.ReportEvent( _
+        sourceNode, _
+        OpcEventSeverity.Medium, _
+        "Recognized a medium urgent situation at machine {0}.", _
         machineId)
 
 ' Same usage as before + explicit source information.
-server.ReportEvent(
-        sourceNodeId, 
+server.ReportEvent( _
+        sourceNodeId, _
         sourceNodeName, 
-        OpcEventSeverity.Medium, 
+        OpcEventSeverity.Medium, _
         "Recognized a medium urgent situation.")
 
 ' Same usage as before + arguments support.
-server.ReportEvent(
-        sourceNodeId, 
-        sourceNodeName, 
-        OpcEventSeverity.Medium, 
-        "Recognized a medium urgent situation at machine {0}.", 
+server.ReportEvent( _
+        sourceNodeId, _
+        sourceNodeName, _
+        OpcEventSeverity.Medium, _
+        "Recognized a medium urgent situation at machine {0}.", _
         machineId)
 
 ' DOC
@@ -124,8 +124,8 @@ AddHandler outOfMaterial.RespondCallback, AddressOf HandleOutOfMaterialResponse
 
 ...
 
-Private Function HandleOutOfMaterialResponse(
-        context As OpcNodeContext(Of OpcDialogConditionNode), 
+Private Function HandleOutOfMaterialResponse( _
+        context As OpcNodeContext(Of OpcDialogConditionNode), _
         selectedResponse As Integer) As OpcStatusCode
     ' Handle the response
     If context.Node.OkResponse = selectedResponse Then
