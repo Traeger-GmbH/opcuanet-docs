@@ -52,7 +52,7 @@ server.CertificateStores.AutoCreateCertificate = False
 server.Security.AnonymousAcl.IsEnabled = False
 
 ' DOC
-Dim acl As acl = server.Security.UserNameAcl
+Dim acl = server.Security.UserNameAcl
 
 acl.AddEntry("username1", "password1")
 acl.AddEntry("username2", "password2")
@@ -61,7 +61,7 @@ acl.AddEntry("username3", "password3")
 acl.IsEnabled = True
 
 ' DOC
-acl = server.Security.CertificateAcl
+Dim acl = server.Security.CertificateAcl
 
 acl.AddEntry(New X509Certificate2(".\user1.pfx"))
 acl.AddEntry(New X509Certificate2(".\user2.pfx"))
