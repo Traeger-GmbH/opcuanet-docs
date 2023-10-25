@@ -70,7 +70,7 @@ acl.AddEntry(New X509Certificate2(".\user3.pfx"))
 acl.IsEnabled = True
 
 ' DOC
-Dim user1 As user1 = acl.AddEntry("username1", "password1")
+Dim user1 = acl.AddEntry("username1", "password1")
 
 ' DOC
 user1.Deny(OpcRequestType.Write)
