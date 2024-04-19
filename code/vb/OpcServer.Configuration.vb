@@ -91,11 +91,11 @@ server.UnregisterAddress("opc.tcp://localhost:4840/")
 
 ' DOC
 server.Security.EndpointPolicies.Add(New OpcSecurityPolicy(
-	OpcSecurityMode.Sign, OpcSecurityAlgorithm.Basic256, 3))
+	OpcSecurityMode.Sign, OpcSecurityAlgorithm.Basic256Sha256)
 
 ' DOC
 server.Security.EndpointPolicies.Add(New OpcSecurityPolicy(
-	OpcSecurityMode.None, OpcSecurityAlgorithm.None, 0))
+	OpcSecurityMode.None, OpcSecurityAlgorithm.None))
 
 ' DOC
 server.Security.AutoAcceptUntrustedCertificates = False
@@ -104,7 +104,7 @@ server.Security.AutoAcceptUntrustedCertificates = False
 AddHandler server.CertificateValidationFailed, AddressOf HandleCertificateValidationFailed
 '...
 Private Sub HandleCertificateValidationFailed(sender As Object, e As OpcCertificateValidationFailedEventArgs)
-    If e.Certificate.SerialNumber = "..." Then
+    If e.Certificate.Thumbprint = "..." Then
         e.Accept = True
     End If
 End Sub

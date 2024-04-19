@@ -91,11 +91,11 @@ server.UnregisterAddress("opc.tcp://localhost:4840/");
 
 // DOC
 server.Security.EndpointPolicies.Add(new OpcSecurityPolicy(
-	OpcSecurityMode.Sign, OpcSecurityAlgorithm.Basic256, 3));
+	OpcSecurityMode.Sign, OpcSecurityAlgorithm.Basic256Sha256));
 
 // DOC
 server.Security.EndpointPolicies.Add(new OpcSecurityPolicy(
-	OpcSecurityMode.None, OpcSecurityAlgorithm.None, 0));
+	OpcSecurityMode.None, OpcSecurityAlgorithm.None));
 
 // DOC
 server.Security.AutoAcceptUntrustedCertificates = false;
@@ -105,7 +105,7 @@ server.CertificateValidationFailed += HandleCertificateValidationFailed;
 ...
 private void HandleCertificateValidationFailed(object sender, OpcCertificateValidationFailedEventArgs e)
 {
-    if (e.Certificate.SerialNumber == "...")
+    if (e.Certificate.Thumbprint == "...")
         e.Accept = true;
 }
 
