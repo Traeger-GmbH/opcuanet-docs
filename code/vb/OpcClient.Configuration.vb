@@ -74,7 +74,7 @@ client.Security.UseHighLevelEndpoint = True;
 
 'DOC
 client.Security.EndpointPolicy = New OpcSecurityPolicy( _
-        OpcSecurityMode.None, OpcSecurityAlgorithm.Basic256)
+        OpcSecurityMode.None, OpcSecurityAlgorithm.Basic256Sha256)
 
 'DOC
 Using client As New OpcDiscoveryClient("opc.tcp://localhost:4840/")
