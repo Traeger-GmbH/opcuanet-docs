@@ -97,7 +97,7 @@ AddHandler client.CertificateValidationFailed, AddressOf HandleCertificateValida
 Private Sub HandleCertificateValidationFailed( _
         ByVal sender As Object, _
         ByVal e As OpcCertificateValidationFailedEventArgs)
-    If e.Certificate.SerialNumber = "..." Then
+    If e.Certificate.Thumbprint = "..." Then
         e.Accept = True
     End If
 End Sub

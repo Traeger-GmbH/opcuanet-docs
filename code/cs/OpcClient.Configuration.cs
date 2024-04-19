@@ -98,7 +98,7 @@ private void HandleCertificateValidationFailed(
         object sender,
         OpcCertificateValidationFailedEventArgs e)
 {
-    if (e.Certificate.SerialNumber == "...")
+    if (e.Certificate.Thumbprint == "...")
         e.Accept = true;
 }
 
