@@ -63,9 +63,9 @@ acl.IsEnabled = true;
 // DOC  
 var acl = server.Security.CertificateAcl;
   
-acl.AddEntry(new X509Certificate2(@".\user1.pfx"));
-acl.AddEntry(new X509Certificate2(@".\user2.pfx"));
-acl.AddEntry(new X509Certificate2(@".\user3.pfx"));
+acl.AddEntry(new X509Certificate2(@".\user1.der"));
+acl.AddEntry(new X509Certificate2(@".\user2.der"));
+acl.AddEntry(new X509Certificate2(@".\user3.der"));
 ...
 acl.IsEnabled = true;
 

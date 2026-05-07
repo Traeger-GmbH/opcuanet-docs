@@ -63,9 +63,9 @@ acl.IsEnabled = True
 ' DOC
 Dim acl = server.Security.CertificateAcl
 
-acl.AddEntry(New X509Certificate2(".\user1.pfx"))
-acl.AddEntry(New X509Certificate2(".\user2.pfx"))
-acl.AddEntry(New X509Certificate2(".\user3.pfx"))
+acl.AddEntry(New X509Certificate2(".\user1.der"))
+acl.AddEntry(New X509Certificate2(".\user2.der"))
+acl.AddEntry(New X509Certificate2(".\user3.der"))
 '...
 acl.IsEnabled = True
 
