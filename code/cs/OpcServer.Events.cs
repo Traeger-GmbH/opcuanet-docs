@@ -188,3 +188,96 @@ var positionLimit = new OpcLimitAlarmNode(
 
 positionLimit.HighHighLimit = 120; // e.g. mm
 positionLimit.LowLowLimit = 0;     // e.g. mm
+
+// DOC
+// Applies the changes of the event node and sends the event to all subscribers.
+server.ReportEvent(activatedEvent);
+
+// DOC
+var maintenanceEvent = new OpcConditionNode(machineOne, "Maintenance");
+
+// Default: EnabledOnly for an OpcConditionNode,
+// ActiveOrUnacknowledged for acknowledgeable conditions and alarms.
+maintenanceEvent.IsRetainedPolicy = OpcConditionRetainPolicy.Manual;
+
+// Interesting for a client yes or no (only kept in case of the Manual policy)
+maintenanceEvent.IsRetained = true;
+
+// Status of the source the condition is based upon
+maintenanceEvent.Quality = OpcStatusCode.Good;
+
+// DOC
+// Use the Change methods once the node has been added to the address space.
+maintenanceEvent.ChangeIsEnabled(this.SystemContext, false);
+maintenanceEvent.ChangeComment(this.SystemContext, "Planned maintenance");
+
+// Reports an event whenever one of the Change methods completes.
+maintenanceEvent.AutoReportChanges = true;
+
+// DOC
+// Uses a new GUID as BranchId
+var maintenanceBranchA = maintenanceEvent.CreateBranch(this.SystemContext);
+
+// Uses a custom NodeId as BranchId
+var maintenanceBranchB = maintenanceEvent.CreateBranch(this.SystemContext, new OpcNodeId(10001));
+
+// DOC
+outOfMaterial.RespondCallback = this.HandleOutOfMaterialResponse;
+outOfMaterial.ActivateDialog(this.SystemContext);
+...
+private OpcStatusCode HandleOutOfMaterialResponse(
+        OpcNodeContext<OpcDialogConditionNode> context,
+        int selectedResponse)
+{
+    // Handle the response
+    if (context.Node.OkResponse == selectedResponse)
+        ContinueJob();
+    else
+        CancelJob();
+
+    // Apply the response
+    context.Node.RespondDialog(context, selectedResponse);
+
+    return OpcStatusCode.Good;
+}
+
+// DOC
+var outOfProcessableBounds = new OpcAcknowledgeableConditionNode(machineOne, "OutOfBoundsAlert");
+
+// Once the node has been added to the address space:
+// Define the condition as: Needs to be acknowledged
+outOfProcessableBounds.ChangeIsAcked(this.SystemContext, false);
+
+// Define the condition as: Needs to be confirmed
+outOfProcessableBounds.ChangeIsConfirmed(this.SystemContext, false);
+
+// DOC
+outOfProcessableBounds.AcknowledgeCallback = (context, eventId, comment) => {
+    Console.WriteLine("Acknowledged: {0}", comment);
+    return OpcStatusCode.Good;
+};
+
+// Acknowledge or confirm the condition on the server side.
+outOfProcessableBounds.Acknowledge(this.SystemContext, "Acknowledged by the server");
+outOfProcessableBounds.Confirm(this.SystemContext);
+
+// DOC
+// Suppress the alarm, e.g. while the machine is in maintenance.
+overheating.ChangeIsSuppressed(this.SystemContext, true);
+
+// Shelve the alarm for 30 minutes.
+overheating.ChangeShelving(this.SystemContext, true, false, TimeSpan.FromMinutes(30));
+
+// Unshelve the alarm.
+overheating.ChangeShelving(this.SystemContext, false);
+
+// DOC
+var temperatureLimit = new OpcExclusiveLevelAlarmNode(
+        machineOne, "TemperatureLimit", OpcLimitAlarmStates.High | OpcLimitAlarmStates.HighHigh);
+
+temperatureLimit.HighLimit = 80;      // e.g. °C
+temperatureLimit.HighHighLimit = 100; // e.g. °C
+
+// Once the node has been added to the address space:
+temperatureLimit.ChangeIsActive(this.SystemContext, true);
+temperatureLimit.ChangeLimitState(this.SystemContext, OpcLimitAlarmStates.High);

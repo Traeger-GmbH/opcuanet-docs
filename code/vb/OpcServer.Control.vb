@@ -56,3 +56,56 @@ End Sub
 
 AddHandler server.RequestProcessing, AddressOf HandleRequestProcessing
 
+
+' DOC
+AddHandler server.RequestValidating, AddressOf HandleRequestValidating
+'...
+Private Shared ReadOnly nodesPerSession As New Dictionary(Of OpcNodeId, Integer)()
+
+Private Shared Sub HandleRequestValidating(sender As Object, e As OpcRequestValidatingEventArgs)
+    Console.Write(" -> Validating: " & e.Request.ToString())
+
+    If e.RequestType = OpcRequestType.AddNodes Then
+        Dim sessionId = e.Context.SessionId
+        Dim request = CType(e.Request, OpcAddNodesRequest)
+
+        SyncLock nodesPerSession
+            Dim count As Integer = 0
+            nodesPerSession.TryGetValue(sessionId, count)
+            count += request.Commands.Count
+
+            ' Reject the request in case it would exceed 100 AddNode commands per session.
+            If count > 100 Then
+                e.Cancel = True
+            Else
+                nodesPerSession(sessionId) = count
+            End If
+        End SyncLock
+    End If
+End Sub
+
+' DOC
+AddHandler server.RequestJudgement, AddressOf HandleRequestJudgement
+'...
+Private Shared Sub HandleRequestJudgement(sender As Object, e As OpcRequestJudgementEventArgs)
+    ' Accept outdated requests, e.g. in case the clocks of client and server differ.
+    If e.Impeachment = OpcRequestImpeachment.Outdated Then
+        e.Dismiss = True
+    End If
+End Sub
+
+' DOC
+AddHandler server.SessionCreated, Sub(sender, e) Console.WriteLine("Session created: {0}", e.Session.Name)
+AddHandler server.SessionClosing, Sub(sender, e) Console.WriteLine("Session closing: {0}", e.Session.Name)
+
+AddHandler server.SubscriptionCreated, Sub(sender, e) Console.WriteLine(
+        "Subscription {0} created in session {1}", e.Subscription.Id, e.Subscription.Session.Name)
+
+' DOC
+' Announce the expected end of the maintenance to the clients.
+server.EstimatedReturnTime = DateTime.UtcNow.AddMinutes(10)
+server.Suspend()
+
+' ... maintenance ...
+
+server.Resume()

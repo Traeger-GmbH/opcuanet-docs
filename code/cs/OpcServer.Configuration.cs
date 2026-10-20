@@ -120,3 +120,85 @@ if (!server.CertificateStores.TrustedPeerStore.Contains(e.Certificate))
 // DOC
 var server = new OpcServer("opc.tcp://localhost:4840/");
 server.Address = new Uri("opc.tcp://localhost:4840/");
+
+// DOC
+var configuration = OpcApplicationConfiguration.LoadServerConfigFile("MyServerAppNameConfig.xml");
+
+// The method returns a null reference in case the file could not be loaded.
+if (configuration == null)
+    throw new InvalidOperationException("The server configuration could not be loaded.");
+
+server.Configuration = configuration;
+
+// DOC
+// Default: Value of AssemblyTitleAttribute of entry assembly.
+server.ApplicationName = "MyServerAppName";
+
+// Default: A null reference to use the URI of the application certificate.
+// The value is used to create a new application certificate.
+server.ApplicationUri = new Uri("urn:localhost:MyServerAppName");
+
+// DOC
+// Default: ".\CertificateStores\App"
+server.CertificateStores.ApplicationStore.Path
+        = @"%LocalApplicationData%\MyServerAppName\App Certificates";
+
+// Default: ".\CertificateStores\Rejected"
+server.CertificateStores.RejectedStore.Path
+        = @"%LocalApplicationData%\MyServerAppName\Rejected Certificates";
+
+// Default: ".\CertificateStores\Trusted"
+server.CertificateStores.TrustedIssuerStore.Path
+        = @"%LocalApplicationData%\MyServerAppName\Trusted Issuer Certificates";
+
+// Default: ".\CertificateStores\Trusted"
+server.CertificateStores.TrustedPeerStore.Path
+        = @"%LocalApplicationData%\MyServerAppName\Trusted Peer Certificates";
+
+// DOC
+var certificate = OpcCertificateManager.LoadCertificate("MyServerCertificate.pfx", "password");
+
+// DOC
+var settings = new OpcCertificateSettings("MyServerAppName") {
+    ApplicationUri = new Uri("urn:localhost:MyServerAppName"),
+    Lifetime = 60 // Months, default: 600
+};
+
+settings.DomainNames.Add("localhost");
+
+var certificate = OpcCertificateManager.CreateCertificate(settings);
+
+// DOC
+server.RegisterAddress("https://mydomain.com/");
+server.RegisterAddress("opc.tcp://192.168.0.123:12345/");
+
+// DOC
+server.UnregisterAddress("https://mydomain.com/");
+
+// server.Address becomes: "opc.tcp://192.168.0.123:12345/"
+server.UnregisterAddress("opc.tcp://localhost:4840/");
+
+// DOC
+// Default: OpcAddressScope.IPvX (IPv4 and IPv6)
+server.Binding.AddressScope = OpcAddressScope.IPv4;
+
+// Default: empty (bind to all network interfaces of the address scope)
+server.Binding.Addresses.Add(IPAddress.Parse("192.168.0.123"));
+
+// Default: true (only one process can bind to the port)
+server.Binding.UseExclusiveAddress = false;
+
+// DOC
+server.Security.CertificateValidationRules
+        = OpcCertificateValidationRules.RejectSHA1Signed
+        | OpcCertificateValidationRules.DisableBackwardsCompatibleValidation;
+
+// DOC
+server.Transport.MaxStringLength = 1048576;      // Default: 65535
+server.Transport.MaxByteStringLength = 10485760; // Default: 5242880
+server.Transport.MaxArrayLength = 1000000;       // Default: 65535
+server.Transport.MaxMessageSize = 20971520;      // Default: 10485760
+
+// DOC
+// Default: false (the server does not announce any operation limits)
+server.OperationLimits.AutoDetermineLimits = true;

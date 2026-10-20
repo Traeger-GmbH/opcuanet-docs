@@ -68,3 +68,28 @@ variableNode.Timestamp = DateTime.UtcNow;
 variableNode.Value = ...;
 
 variableNode.ApplyChanges(...);
+
+// DOC
+var server = new OpcServer("opc.tcp://localhost:4840/", addressSpace => {
+    var machineNode = new OpcFolderNode("Machine");
+    new OpcDataVariableNode<bool>(machineNode, "IsRunning");
+
+    // Adds the node beneath the Objects folder (the root of all server nodes).
+    addressSpace.AddNode(machineNode);
+});
+
+// DOC
+// The parent node is already part of the address space of the node manager.
+var jobNode = new OpcDataVariableNode<string>(machineNode, "Job", "JOB0815");
+nodeManager.AddNode(jobNode);
+
+// Removes the node from the address space.
+nodeManager.RemoveNode(jobNode);
+
+// DOC
+speedNode.Status.Update(OpcStatusCode.Good);
+speedNode.Timestamp = DateTime.UtcNow;
+speedNode.Value = 1200;
+
+// Notifies subscribed clients about the changes.
+speedNode.ApplyChanges(server.SystemContext);

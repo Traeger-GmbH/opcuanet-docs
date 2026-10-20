@@ -29,3 +29,13 @@ private OpcVariableValue<object> HandleReadVariableValue(
 {
     return ReadValueFromDataSource(context.Node) ?? value;
 }
+
+// DOC
+machineIsRunningNode.ReadDescriptionCallback = HandleReadDescription;
+...
+private OpcAttributeValue<OpcText> HandleReadDescription(
+        OpcReadAttributeValueContext context,
+        OpcAttributeValue<OpcText> value)
+{
+    return ReadDescriptionFromDataSource(context.Node) ?? value;
+}

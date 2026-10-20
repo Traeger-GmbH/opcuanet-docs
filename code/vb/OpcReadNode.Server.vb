@@ -29,3 +29,12 @@ Private Function HandleReadVariableValue( _
     Return If(ReadValueFromDataSource(context.Node), value)
 End Function
 
+
+'DOC
+machineIsRunningNode.ReadDescriptionCallback = AddressOf HandleReadDescription
+'...
+Private Function HandleReadDescription(
+        context As OpcReadAttributeValueContext,
+        value As OpcAttributeValue(Of OpcText)) As OpcAttributeValue(Of OpcText)
+    Return If(ReadDescriptionFromDataSource(context.Node), value)
+End Function

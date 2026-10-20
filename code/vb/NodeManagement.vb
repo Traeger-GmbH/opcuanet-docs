@@ -68,3 +68,29 @@ variableNode.Timestamp = DateTime.UtcNow
 variableNode.Value = ...
 
 variableNode.ApplyChanges(...)
+
+'DOC
+Dim server = New OpcServer("opc.tcp://localhost:4840/",
+    Sub(addressSpace)
+        Dim machineNode = New OpcFolderNode("Machine")
+        Dim isRunningNode = New OpcDataVariableNode(Of Boolean)(machineNode, "IsRunning")
+
+        ' Adds the node beneath the Objects folder (the root of all server nodes).
+        addressSpace.AddNode(machineNode)
+    End Sub)
+
+'DOC
+' The parent node is already part of the address space of the node manager.
+Dim jobNode = New OpcDataVariableNode(Of String)(machineNode, "Job", "JOB0815")
+nodeManager.AddNode(jobNode)
+
+' Removes the node from the address space.
+nodeManager.RemoveNode(jobNode)
+
+'DOC
+speedNode.Status.Update(OpcStatusCode.Good)
+speedNode.Timestamp = DateTime.UtcNow
+speedNode.Value = 1200
+
+' Notifies subscribed clients about the changes.
+speedNode.ApplyChanges(server.SystemContext)

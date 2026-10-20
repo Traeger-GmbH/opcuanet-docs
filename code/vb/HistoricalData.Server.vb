@@ -366,3 +366,124 @@ End If
 Return history _
         .Enumerate(startTime, endTime) _
         .ToArray()
+
+'DOC
+Protected Overrides Function RetrieveNodeHistoryProvider(node As IOpcNode) As IOpcNodeHistoryProvider
+    If node Is machineIsRunningNode Then
+        Return machineIsRunningHistorian
+    End If
+
+    Return MyBase.RetrieveNodeHistoryProvider(node)
+End Function
+
+'DOC
+Public Function ReadHistory(
+        context As OpcContext,
+        startTime As DateTime?,
+        endTime As DateTime?,
+        timeFlowsBackward As Boolean,
+        maxCount As UInteger?,
+        options As OpcReadHistoryOptions) As IEnumerable(Of OpcHistoryValue) _
+        Implements IOpcNodeHistoryProvider.ReadHistory
+    ' Read (modified) Node History here.
+End Function
+
+'DOC
+Protected Overrides Function ReadHistory(
+        context As OpcContext,
+        node As IOpcNode,
+        startTime As DateTime?,
+        endTime As DateTime?,
+        timeFlowsBackward As Boolean,
+        maxCount As UInteger?,
+        options As OpcReadHistoryOptions) As IEnumerable(Of OpcHistoryValue)
+    ' Read (modified) Node History here.
+End Function
+
+'DOC
+Dim isModified = (options And OpcReadHistoryOptions.Modified) _
+        = OpcReadHistoryOptions.Modified
+
+Dim values As OpcHistoryValue()
+
+If isModified Then
+    values = modifiedHistory _
+            .Enumerate(startTime, endTime) _
+            .Cast(Of OpcHistoryValue)() _
+            .ToArray()
+Else
+    values = history _
+            .Enumerate(startTime, endTime) _
+            .ToArray()
+End If
+
+' Return the values in reverse order in case the time flows backward.
+If timeFlowsBackward Then
+    Array.Reverse(values)
+End If
+
+Return values
+
+'DOC
+Public Class MachineEventHistory
+    Implements IOpcEventHistoryProvider
+
+    Private ReadOnly events As New List(Of OpcEvent)()
+
+    Public Sub New(node As OpcObjectNode)
+        Me.Node = node
+        Me.Node.IsHistorizingEvents = True
+    End Sub
+
+    Public ReadOnly Property Node As OpcObjectNode Implements IOpcEventHistoryProvider.Node
+
+    Public Sub Add(historyEvent As OpcEvent)
+        SyncLock Me.events
+            Me.events.Add(historyEvent)
+        End SyncLock
+    End Sub
+
+    Public Function ReadEventHistory(
+            context As OpcContext,
+            filter As OpcEventFilter,
+            startTime As DateTime?,
+            endTime As DateTime?,
+            timeFlowsBackward As Boolean,
+            maxCount As UInteger?) As IEnumerable(Of OpcEvent) _
+            Implements IOpcEventHistoryProvider.ReadEventHistory
+        SyncLock Me.events
+            Dim from = If(timeFlowsBackward, endTime, startTime)
+            Dim [to] = If(timeFlowsBackward, startTime, endTime)
+
+            Dim result = Me.events.Where(
+                Function(item) (Not from.HasValue OrElse from.Value = DateTime.MinValue OrElse item.Time >= from.Value) _
+                        AndAlso (Not [to].HasValue OrElse [to].Value = DateTime.MinValue OrElse item.Time <= [to].Value))
+
+            If timeFlowsBackward Then
+                result = result.Reverse()
+            End If
+
+            If maxCount.HasValue Then
+                result = result.Take(CInt(maxCount.Value))
+            End If
+
+            Return result.ToArray()
+        End SyncLock
+    End Function
+End Class
+
+'DOC
+Protected Overrides Function RetrieveEventHistoryProvider(node As IOpcNode) As IOpcEventHistoryProvider
+    If node Is Me.machineEventHistory.Node Then
+        Return Me.machineEventHistory
+    End If
+
+    Return MyBase.RetrieveEventHistoryProvider(node)
+End Function
+
+'DOC
+activatedEvent.Message = "Machine started"
+activatedEvent.ReportEvent(Me.SystemContext)
+
+' Stores a snapshot of the event in the event history.
+Me.machineEventHistory.Add(activatedEvent.CreateEvent(Me.SystemContext))

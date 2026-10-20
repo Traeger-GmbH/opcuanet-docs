@@ -29,3 +29,13 @@ private OpcVariableValue<object> HandleWriteVariableValue(
 {
     return WriteValueToDataSource(context.Node, value) ?? value;
 }
+
+// DOC
+machineIsRunningNode.WriteDescriptionCallback = HandleWriteDescription;
+...
+private OpcAttributeValue<OpcText> HandleWriteDescription(
+        OpcWriteAttributeValueContext context,
+        OpcAttributeValue<OpcText> value)
+{
+    return WriteDescriptionToDataSource(context.Node, value) ?? value;
+}

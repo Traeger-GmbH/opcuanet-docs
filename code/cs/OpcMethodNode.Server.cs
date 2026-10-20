@@ -71,3 +71,39 @@ private int StartMachine(
     // Your code to execute.
     return 10;
 }
+
+// DOC
+var startMethodNode = new OpcMethodNode(
+        machineNode,
+        "StartMachine",
+        new Func<OpcMethodContext, int, int>(this.StartMachine));
+...
+private int StartMachine(OpcMethodContext context, int reasonNumber)
+{
+    // Your code to execute.
+
+    this.machineStateVariable.Value = "Started";
+    this.machineStateVariable.ApplyChanges(context);
+
+    return statusCode;
+}
+
+// DOC
+var startMethodNode = new OpcMethodNode(
+        machineNode,
+        "StartMachine",
+        OpcMethodCommands.Execute(this.StartMachine),
+        new[] { new OpcArgument("ReasonNumber", typeof(int), "0: Maintenance, 1: Manufacturing") },
+        new OpcArgument("Result", typeof(int), "The result code of the machine driver."));
+...
+private OpcResult StartMachine(
+        OpcMethodContext context,
+        IList<object> inputArguments,
+        IList<object> outputArguments)
+{
+    var reasonNumber = (int)inputArguments[0];
+
+    // Your code to execute.
+    outputArguments[0] = statusCode;
+    return new OpcResult(OpcStatusCode.Good);
+}
