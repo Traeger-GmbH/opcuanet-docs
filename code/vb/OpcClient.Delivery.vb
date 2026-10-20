@@ -14,3 +14,14 @@ client.ApplicationName = "MyDifferentClientAppName"
 
 'DOC
 client.ApplicationUri = New Uri("<ApplicationUri>")
+
+'DOC
+Dim settings = New OpcCertificateSettings("MyClientAppName") With {
+    .ApplicationUri = New Uri("urn:localhost:MyClientAppName"),
+    .Lifetime = 60 'Months, default: 600
+}
+
+settings.DomainNames.Add("localhost")
+
+Dim certificate = OpcCertificateManager.CreateCertificate(settings)
+OpcCertificateManager.SaveCertificate("MyClientCertificate.pfx", certificate)

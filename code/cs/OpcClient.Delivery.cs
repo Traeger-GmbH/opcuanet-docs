@@ -14,3 +14,14 @@ client.ApplicationName = "MyDifferentClientAppName";
 
 // DOC
 client.ApplicationUri = new Uri("<ApplicationUri>");
+
+// DOC
+var settings = new OpcCertificateSettings("MyClientAppName") {
+    ApplicationUri = new Uri("urn:localhost:MyClientAppName"),
+    Lifetime = 60 // Months, default: 600
+};
+
+settings.DomainNames.Add("localhost");
+
+var certificate = OpcCertificateManager.CreateCertificate(settings);
+OpcCertificateManager.SaveCertificate("MyClientCertificate.pfx", certificate);

@@ -43,3 +43,14 @@ Dim commands As OpcCallMethod() = New OpcCallMethod() { _
 
 'The result array contains the values of the OUT arguments offered by the methods.
 Dim results As Object()() = client.CallMethods(commands)
+
+'DOC
+'Call a method without IN and OUT arguments.
+client.CallAction("ns=2;s=Machine", "ns=2;s=Machine/StartMachine")
+
+'Call a method with two IN arguments and return the value of its first OUT argument.
+Dim jobId As Integer = client.CallFunc(Of String, Integer, Integer)( _
+        "ns=2;s=Machine", _
+        "ns=2;s=Machine/StartJob", _
+        "JOB001", _
+        10023)

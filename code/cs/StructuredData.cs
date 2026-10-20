@@ -174,3 +174,63 @@ internal struct MyDataTypeWithOptionalFields
     [OpcDataTypeMemberSwitch("FieldE", value: 42, @operator: OpcMemberSwitchOperator.GreaterThan)]
     public string OptionalField5;
 }
+
+// DOC
+[OpcDataType("<NodeId of DataType Node>")]
+[OpcDataTypeEncoding(
+        "<NodeId of Binary Encoding Node>",
+        NamespaceUri = "<NamespaceUri.Value of binary Dictionary-Node>")]
+[OpcDataTypeEncodingMask(OpcEncodingMaskKind.Auto)]
+internal struct MyDataTypeWithOptionalFields
+{
+    public short FieldA;
+    public int FieldB;
+    public string FieldC;
+
+    // Nullables are treat as optional fields by default.
+    // Existence-Indicator-Bit is Bit0 in the encoding mask.
+    public uint? OptionalField1;
+
+    // Existence-Indicator-Bit is Bit1 (the next unused bit) in the encoding mask.
+    [OpcDataTypeMemberSwitch]
+    public int OptionalField2;
+
+    // Existence-Indicator-Bit is Bit3 (bit 2 is unused) in the encoding mask.
+    [OpcDataTypeMemberSwitch(bit: 3)]
+    public byte OptionalField3;
+}
+
+// DOC
+[OpcDataType("<NodeId of DataType Node>")]
+[OpcDataTypeEncoding(
+        "<NodeId of Binary Encoding Node>",
+        NamespaceUri = "<NamespaceUri.Value of binary Dictionary-Node>")]
+internal struct MyDataTypeWithConditionalFields
+{
+    public bool FieldD;
+
+    // 'OptionalField4' exists only if the value of 'FieldD' is equals 'true'.
+    [OpcDataTypeMemberSwitch("FieldD")]
+    public string OptionalField4;
+
+    public int FieldE;
+
+    // 'OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
+    [OpcDataTypeMemberSwitch("FieldE", value: 42, @operator: OpcMemberSwitchOperator.GreaterThan)]
+    public string OptionalField5;
+}
+
+// DOC
+[OpcDataType("<NodeId of DataType Node>")]
+[OpcDataTypeEncoding(
+        "<NodeId of Binary Encoding Node>",
+        NamespaceUri = "<NamespaceUri.Value of binary Dictionary-Node>")]
+internal class MyUnionDataType : IOpcUnion
+{
+    // 0 = no field, 1 = 'Number', 2 = 'Text'.
+    public uint SwitchValue { get; set; }
+
+    public int Number { get; set; }
+
+    public string Text { get; set; }
+}

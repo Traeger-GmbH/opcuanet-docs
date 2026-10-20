@@ -43,3 +43,14 @@ OpcCallMethod[] commands = new OpcCallMethod[] {
  
 // The result array contains the values of the OUT arguments offered by the methods.
 object[][] results = client.CallMethods(commands);
+
+// DOC
+// Call a method without IN and OUT arguments.
+client.CallAction("ns=2;s=Machine", "ns=2;s=Machine/StartMachine");
+
+// Call a method with two IN arguments and return the value of its first OUT argument.
+int jobId = client.CallFunc<string, int, int>(
+        "ns=2;s=Machine",
+        "ns=2;s=Machine/StartJob",
+        "JOB001",
+        10023);

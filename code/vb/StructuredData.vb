@@ -174,3 +174,74 @@ Friend Structure MyDataTypeWithOptionalFields
     Public OptionalField5 As String
 End Structure
 
+
+'DOC
+Using client As New OpcClient("opc.tcp://localhost:4840")
+    client.NodeSet = OpcNodeSet.Load("..\Resources\MyServersNodeSet.xml")
+    client.UseDynamic = True
+
+    client.Connect()
+    Dim staff = client.ReadNode("ns=2;s=Machine/Operator").Value
+
+    Console.WriteLine("Name: {0}", staff.Name)
+    Console.WriteLine("Staff ID: {0}", staff.ID)
+End Using
+
+'DOC
+<OpcDataType("<NodeId of DataType Node>")>
+<OpcDataTypeEncoding( _
+        "<NodeId of Binary Encoding Node>", _
+        NamespaceUri:="<NamespaceUri.Value of binary Dictionary-Node>")>
+<OpcDataTypeEncodingMask(OpcEncodingMaskKind.Auto)>
+Friend Structure MyDataTypeWithOptionalFields
+    Public FieldA As Short
+    Public FieldB As Integer
+    Public FieldC As String
+
+    'Nullables are treat as optional fields by default.
+    'Existence-Indicator-Bit is Bit0 in the encoding mask.
+    Public OptionalField1 As UInteger?
+
+    'Existence-Indicator-Bit is Bit1 (the next unused bit) in the encoding mask.
+    <OpcDataTypeMemberSwitch>
+    Public OptionalField2 As Integer
+
+    'Existence-Indicator-Bit is Bit3 (bit 2 is unused) in the encoding mask.
+    <OpcDataTypeMemberSwitch(3)>
+    Public OptionalField3 As Byte
+End Structure
+
+'DOC
+<OpcDataType("<NodeId of DataType Node>")>
+<OpcDataTypeEncoding( _
+        "<NodeId of Binary Encoding Node>", _
+        NamespaceUri:="<NamespaceUri.Value of binary Dictionary-Node>")>
+Friend Structure MyDataTypeWithConditionalFields
+    Public FieldD As Boolean
+
+    ''OptionalField4' exists only if the value of 'FieldD' is equals 'true'.
+    <OpcDataTypeMemberSwitch("FieldD")>
+    Public OptionalField4 As String
+
+    Public FieldE As Integer
+
+    ''OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
+    <OpcDataTypeMemberSwitch("FieldE", 42, OpcMemberSwitchOperator.GreaterThan)>
+    Public OptionalField5 As String
+End Structure
+
+'DOC
+<OpcDataType("<NodeId of DataType Node>")>
+<OpcDataTypeEncoding( _
+        "<NodeId of Binary Encoding Node>", _
+        NamespaceUri:="<NamespaceUri.Value of binary Dictionary-Node>")>
+Friend Class MyUnionDataType
+    Implements IOpcUnion
+
+    '0 = no field, 1 = 'Number', 2 = 'Text'.
+    Public Property SwitchValue As UInteger Implements IOpcUnion.SwitchValue
+
+    Public Property Number As Integer
+
+    Public Property Text As String
+End Class

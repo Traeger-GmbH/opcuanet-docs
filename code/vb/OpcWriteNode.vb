@@ -21,3 +21,14 @@ Dim commands As OpcWriteNode() = New OpcWriteNode() { _
 }
 
 Dim results As OpcStatusCollection = client.WriteNodes(commands)
+
+'DOC
+'Write the elements with the index 2 to 4 of the array.
+Dim result As OpcStatus = client.WriteNode( _
+        "ns=2;s=Machine/Job/Speeds", _
+        New OpcRange(2, 4), _
+        New Integer() {1200, 1300, 1400})
+
+'DOC
+'Always send the current time as the source timestamp of the values to write.
+client.Services.WriteNodes.TimestampSource = OpcTimestampSource.UtcNow

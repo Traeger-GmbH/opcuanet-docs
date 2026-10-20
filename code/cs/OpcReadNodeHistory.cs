@@ -88,3 +88,39 @@ var maxSpeed = client.ReadNodeHistoryProcessed(
         endTime,
         OpcAggregateType.Maximum,
         "ns=2;s=Machine/Job/Speed");
+
+// DOC
+// Read the average value of each hour (3600000 milliseconds) within the time window.
+var avgSpeedPerHour = client.ReadNodeHistoryProcessed(
+        startTime,
+        endTime,
+        OpcAggregateType.Average,
+        3600000,
+        "ns=2;s=Machine/Job/Speed");
+
+// DOC
+var times = new DateTime[] {
+    new DateTime(2017, 2, 16, 10, 0, 0),
+    new DateTime(2017, 2, 16, 12, 0, 0)
+};
+
+var speeds = client.ReadNodeHistoryAtTime(times, "ns=2;s=Machine/Job/Speed");
+
+foreach (var value in speeds)
+    Console.WriteLine("{0}: {1}", value.Timestamp, value);
+
+// DOC
+var modifiedSpeeds = client.ReadNodeHistoryModified(
+        startTime,
+        endTime,
+        "ns=2;s=Machine/Job/Speed");
+
+foreach (var value in modifiedSpeeds) {
+    Console.WriteLine(
+            "{0}: {1} ({2} at {3} by {4})",
+            value.Timestamp,
+            value,
+            value.ModificationType,
+            value.ModificationTime,
+            value.ModificationUserName);
+}

@@ -66,3 +66,14 @@ Dim node = client.BrowseNode(browse)
 For Each childNode In node.Children()
     'Continue recursively...
 Next
+
+'DOC
+For Each variableNode In machineNode.Children(OpcNodeCategory.Variable)
+    'Your code to operate on each variable node.
+Next
+
+For Each parentNode In jobNode.Parents()
+    'Your code to operate on each parent node.
+Next
+
+Dim speed As Integer = jobNode.Child("Speed").AttributeValue(Of Integer)(OpcAttribute.Value)

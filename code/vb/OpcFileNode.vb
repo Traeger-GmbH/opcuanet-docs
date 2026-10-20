@@ -70,3 +70,22 @@ End Try
 If OpcFileMethods.IsFileNode(client, "ns=2;s=Machine/Report") Then
     'Your code to operate on the file node.
 End If
+
+'DOC
+'The type name is qualified, because the Opc.UaFx namespace declares an OpcFileInfo too.
+Dim file = New Opc.UaFx.Client.OpcFileInfo(client, "ns=2;s=Machine/Report")
+
+'DOC
+If file.Exists Then
+    Console.WriteLine("File Length: {0}", file.Length)
+
+    If file.CanUserWrite Then
+        Using stream = file.OpenWrite()
+            'Your code to write via stream.
+        End Using
+    Else
+        Using stream = file.OpenRead()
+            'Your code to read via stream.
+        End Using
+    End If
+End If

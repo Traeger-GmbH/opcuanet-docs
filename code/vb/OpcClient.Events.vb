@@ -217,3 +217,76 @@ Private Shared Sub HandleLocalEvents( _
     End If
 End Sub
 
+
+'DOC
+Private Shared Sub HandleGlobalEvents( _
+        ByVal sender As Object, _
+        ByVal e As OpcEventReceivedEventArgs)
+    Dim alarm = TryCast(e.Event, OpcAlarmCondition)
+
+    If alarm IsNot Nothing Then
+        Console.WriteLine("Alarm: " & alarm.Message.Value)
+    End If
+End Sub
+
+'DOC
+Private Shared Sub HandleLocalEvents( _
+        ByVal sender As Object, _
+        ByVal e As OpcEventReceivedEventArgs)
+    Dim condition = TryCast(e.Event, OpcCondition)
+
+    If condition IsNot Nothing AndAlso condition.IsRetained Then
+        Console.Write((If(condition.ClientUserId, "Comment")) & ":")
+        Console.WriteLine(condition.Comment)
+    End If
+End Sub
+
+'DOC
+Private Shared Sub HandleLocalEvents( _
+        ByVal sender As Object, _
+        ByVal e As OpcEventReceivedEventArgs)
+    Dim condition = TryCast(e.Event, OpcDialogCondition)
+
+    If condition IsNot Nothing AndAlso condition.IsActive Then
+        Console.WriteLine(condition.Prompt)
+        Console.WriteLine("    Options:")
+
+        Dim responseOptions = condition.ResponseOptions
+
+        For index As Integer = 0 To responseOptions.Length - 1
+            Console.Write("      [{0}] = {1}", index, responseOptions(index).Value)
+
+            If index = condition.DefaultResponse Then _
+                Console.Write(" (default)")
+
+            Console.WriteLine()
+        Next
+
+        Dim respond = String.Empty
+        Dim respondOption = condition.DefaultResponse
+
+        Do
+            Console.Write("Enter the number of the option and press Enter to respond: ")
+            respond = Console.ReadLine()
+
+            If String.IsNullOrEmpty(respond) _
+                Then Exit Do
+        Loop While Not Integer.TryParse(respond, respondOption)
+
+        condition.Respond(client, respondOption)
+
+        'The dialog has been answered, the DialogRequested event is not raised.
+        e.Handled = True
+    End If
+End Sub
+
+'DOC
+AddHandler client.DialogRequested, AddressOf HandleDialogRequested
+...
+
+Private Shared Sub HandleDialogRequested( _
+        ByVal sender As Object, _
+        ByVal e As OpcDialogRequestedEventArgs)
+    'Just use the default response, here.
+    e.SelectedResponse = e.Dialog.DefaultResponse
+End Sub

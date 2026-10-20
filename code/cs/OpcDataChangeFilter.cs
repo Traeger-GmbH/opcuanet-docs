@@ -57,3 +57,15 @@ OpcSubscribeDataChange[] commands = new OpcSubscribeDataChange[] {
 };
  
 OpcSubscription subscriptionB = client.SubscribeNodes(commands);
+
+// DOC
+// Report only changes of the value which exceed 0.5 (absolute).
+var filter = new OpcDataChangeFilter(OpcDataChangeTrigger.StatusValue) {
+    DeadbandType = OpcDeadbandType.Absolute,
+    DeadbandValue = 0.5
+};
+
+OpcSubscription subscription = client.SubscribeDataChange(
+        "ns=2;s=Machine/Job/Speed",
+        filter,
+        HandleDataChanged);

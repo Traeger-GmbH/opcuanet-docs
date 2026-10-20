@@ -70,3 +70,23 @@ finally {
 if (OpcFileMethods.IsFileNode(client, "ns=2;s=Machine/Report")) {
     // Your code to operate on the file node.
 }
+
+// DOC
+// The type name is qualified, because the Opc.UaFx namespace declares an OpcFileInfo too.
+var file = new Opc.UaFx.Client.OpcFileInfo(client, "ns=2;s=Machine/Report");
+
+// DOC
+if (file.Exists) {
+    Console.WriteLine($"File Length: {file.Length}");
+
+    if (file.CanUserWrite) {
+        using (var stream = file.OpenWrite()) {
+            // Your code to write via stream.
+        }
+    }
+    else {
+        using (var stream = file.OpenRead()) {
+            // Your code to read via stream.
+        }
+    }
+}

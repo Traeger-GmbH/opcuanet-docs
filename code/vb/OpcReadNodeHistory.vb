@@ -88,3 +88,45 @@ Dim maxSpeed = client.ReadNodeHistoryProcessed( _
         endTime, _
         OpcAggregateType.Maximum, _
         "ns=2;s=Machine/Job/Speed")
+
+'DOC
+Dim startTime = New DateTime(2017, 2, 16, 10, 0, 0)
+Dim history = client.ReadNodeHistory( _
+        startTime, CType(Nothing, DateTime?), "ns=2;s=Machine/Job/Speed")
+
+'DOC
+'Read the average value of each hour (3600000 milliseconds) within the time window.
+Dim avgSpeedPerHour = client.ReadNodeHistoryProcessed( _
+        startTime, _
+        endTime, _
+        OpcAggregateType.Average, _
+        3600000, _
+        "ns=2;s=Machine/Job/Speed")
+
+'DOC
+Dim times = New DateTime() { _
+    New DateTime(2017, 2, 16, 10, 0, 0), _
+    New DateTime(2017, 2, 16, 12, 0, 0) _
+}
+
+Dim speeds = client.ReadNodeHistoryAtTime(times, "ns=2;s=Machine/Job/Speed")
+
+For Each value In speeds
+    Console.WriteLine("{0}: {1}", value.Timestamp, value)
+Next
+
+'DOC
+Dim modifiedSpeeds = client.ReadNodeHistoryModified( _
+        startTime, _
+        endTime, _
+        "ns=2;s=Machine/Job/Speed")
+
+For Each value In modifiedSpeeds
+    Console.WriteLine( _
+            "{0}: {1} ({2} at {3} by {4})", _
+            value.Timestamp, _
+            value, _
+            value.ModificationType, _
+            value.ModificationTime, _
+            value.ModificationUserName)
+Next

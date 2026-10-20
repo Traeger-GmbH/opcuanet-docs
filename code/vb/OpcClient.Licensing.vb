@@ -17,3 +17,10 @@ End If
 #Else
     Opc.UaFx.Client.Licenser.ThrowIfUnlicensed()
 #End If
+
+'DOC
+Dim license As ILicenseInfo = Opc.UaFx.Client.Licenser.LicenseInfo
+
+If license.IsExpired Then
+    Console.WriteLine("The OPC UA SDK license is expired!")
+End If

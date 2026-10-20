@@ -21,3 +21,7 @@ OpcReadNode[] commands = new OpcReadNode[] {
 };
  
 IEnumerable<OpcValue> jobDisplayNames = client.ReadNodes(commands);
+
+// DOC
+// Read the elements with the index 2 to 4 of the array.
+OpcValue speeds = client.ReadNode("ns=2;s=Machine/Job/Speeds", new OpcRange(2, 4));

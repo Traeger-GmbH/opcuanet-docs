@@ -119,3 +119,33 @@ Dim result As OpcAddNodeResult = client.AddNode(New OpcAddObjectNode( _
         shiftTimeType.Create("Early"), _
         shiftTimeType.Create("Noon"), _
         shiftTimeType.Create("Late")))
+
+'DOC
+If result.IsGood Then
+    Console.WriteLine("NodeId of 'Jobs': {0}", result.NodeId)
+Else
+    Console.WriteLine("Failed to add node: {0}", result.Description)
+End If
+
+'DOC
+'Declare Job Type
+Dim jobType = OpcAddObjectNode.OfType(OpcNodeId.Parse("ns=2;s=Types/JobType"))
+
+client.AddNodes( _
+        jobType.Create("JOB001", nodeId:=OpcNodeId.Null, parentNodeId:=jobsNodeId), _
+        jobType.Create("JOB002", nodeId:=OpcNodeId.Null, parentNodeId:=jobsNodeId), _
+        jobType.Create("JOB003", nodeId:=OpcNodeId.Null, parentNodeId:=jobsNodeId), _
+        jobType.Create("JOB004", nodeId:=OpcNodeId.Null, parentNodeId:=jobsNodeId))
+
+Dim scheduleNodeId = OpcNodeId.Parse("ns=2;s=Machine/JOB002/Schedule")
+
+'Declare Shift Time Type
+Dim shiftTimeType = OpcAddVariableNode.OfType(OpcNodeId.Parse("ns=2;s=Types/ShiftTimeType"))
+
+Dim result As OpcAddNodeResult = client.AddNode(New OpcAddObjectNode( _
+        "ShiftPlanning", _
+        nodeId:=OpcNodeId.Null, _
+        parentNodeId:=scheduleNodeId, _
+        shiftTimeType.Create("Early"), _
+        shiftTimeType.Create("Noon"), _
+        shiftTimeType.Create("Late")))

@@ -109,3 +109,96 @@ Dim client = CType(sender, OpcClient)
 If Not client.CertificateStores.TrustedPeerStore.Contains(e.Certificate) Then
     client.CertificateStores.TrustedPeerStore.Add(e.Certificate)
 End If
+
+'DOC
+Dim configuration = OpcApplicationConfiguration.LoadClientConfigFile("MyClientAppNameConfig.xml")
+
+'The method returns Nothing in case the file could not be loaded.
+If configuration Is Nothing Then
+    Throw New InvalidOperationException("The client configuration could not be loaded.")
+End If
+
+client.Configuration = configuration
+
+'DOC
+'Default: Value of AssemblyTitleAttribute of entry assembly.
+client.ApplicationName = "MyClientAppName"
+
+'Default: Nothing to use the URI of the application certificate.
+'The value is used to create a new application certificate.
+client.ApplicationUri = New Uri("urn:localhost:MyClientAppName")
+
+'DOC
+client.SessionTimeout = 30000           'Default: 60000
+client.SessionName = "My Session Name"  'Default: Value of ApplicationName
+
+'DOC
+client.OperationTimeout = 10000          'Default: 120000
+client.DisconnectTimeout = 5000          'Default: 10000
+client.ReconnectTimeout = 5000           'Default: 10000
+
+'DOC
+'Default: ".\CertificateStores\App"
+client.CertificateStores.ApplicationStore.Path _
+        = "%LocalApplicationData%\MyClientAppName\App Certificates"
+
+'Default: ".\CertificateStores\Rejected"
+client.CertificateStores.RejectedStore.Path _
+        = "%LocalApplicationData%\MyClientAppName\Rejected Certificates"
+
+'Default: ".\CertificateStores\Trusted"
+client.CertificateStores.TrustedIssuerStore.Path _
+        = "%LocalApplicationData%\MyClientAppName\Trusted Issuer Certificates"
+
+'Default: ".\CertificateStores\Trusted"
+client.CertificateStores.TrustedPeerStore.Path _
+        = "%LocalApplicationData%\MyClientAppName\Trusted Peer Certificates"
+
+'DOC
+Dim certificate = OpcCertificateManager.LoadCertificate("MyClientCertificate.pfx", "password")
+
+'DOC
+If Not client.CertificateStores.ApplicationStore.Contains(certificate) Then
+    client.CertificateStores.ApplicationStore.Add(certificate)
+End If
+
+'DOC
+client.Security.UseHighLevelEndpoint = True
+
+'DOC
+client.Security.EndpointPolicy = New OpcSecurityPolicy( _
+        OpcSecurityMode.SignAndEncrypt, OpcSecurityAlgorithm.Basic256Sha256)
+
+'DOC
+client.Security.EndpointPolicy = New OpcSecurityPolicy( _
+        OpcSecurityMode.SignAndEncrypt, OpcSecurityAlgorithm.Basic256Sha256)
+
+'Use the next better endpoint in case the server does not offer the policy.
+client.Security.AutoUpgradeEndpointPolicy = True
+
+client.Connect()
+Console.WriteLine("Used endpoint: {0}", client.UsedEndpoint)
+
+'DOC
+client.Security.CertificateValidationRules _
+        = OpcCertificateValidationRules.RejectSHA1Signed _
+        Or OpcCertificateValidationRules.DisableBackwardsCompatibleValidation
+
+'DOC
+AddHandler client.CertificateJudgement, AddressOf HandleCertificateJudgement
+...
+Private Sub HandleCertificateJudgement( _
+        ByVal sender As Object, _
+        ByVal e As OpcCertificateJudgementEventArgs)
+    'The server uses a different certificate than when the connection was established.
+    If e.Impeachment = OpcCertificateImpeachment.Changed _
+            AndAlso e.ImpeachedCertificate.Thumbprint = "..." Then
+        e.Dismiss = True
+    End If
+End Sub
+
+'DOC
+client.Transport.MaxStringLength = 1048576       'Default: 65535
+client.Transport.MaxByteStringLength = 10485760  'Default: 5242880
+client.Transport.MaxArrayLength = 1000000        'Default: 65535
+client.Transport.MaxMessageSize = 20971520       'Default: 10485760

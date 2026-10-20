@@ -21,3 +21,14 @@ OpcWriteNode[] commands = new OpcWriteNode[] {
 };
  
 OpcStatusCollection results = client.WriteNodes(commands);
+
+// DOC
+// Write the elements with the index 2 to 4 of the array.
+OpcStatus result = client.WriteNode(
+        "ns=2;s=Machine/Job/Speeds",
+        new OpcRange(2, 4),
+        new int[] { 1200, 1300, 1400 });
+
+// DOC
+// Always send the current time as the source timestamp of the values to write.
+client.Services.WriteNodes.TimestampSource = OpcTimestampSource.UtcNow;
