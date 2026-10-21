@@ -57,12 +57,14 @@ End Sub
 AddHandler server.RequestProcessing, AddressOf HandleRequestProcessing
 
 
-' DOC
+'DOC
 AddHandler server.RequestValidating, AddressOf HandleRequestValidating
-'...
+...
 Private Shared ReadOnly nodesPerSession As New Dictionary(Of OpcNodeId, Integer)()
 
-Private Shared Sub HandleRequestValidating(sender As Object, e As OpcRequestValidatingEventArgs)
+Private Shared Sub HandleRequestValidating( _
+        ByVal sender As Object, _
+        ByVal e As OpcRequestValidatingEventArgs)
     Console.Write(" -> Validating: " & e.Request.ToString())
 
     If e.RequestType = OpcRequestType.AddNodes Then
@@ -70,11 +72,11 @@ Private Shared Sub HandleRequestValidating(sender As Object, e As OpcRequestVali
         Dim request = CType(e.Request, OpcAddNodesRequest)
 
         SyncLock nodesPerSession
-            Dim count As Integer = 0
+            Dim count As Integer
             nodesPerSession.TryGetValue(sessionId, count)
             count += request.Commands.Count
 
-            ' Reject the request in case it would exceed 100 AddNode commands per session.
+            'Reject the request in case it would exceed 100 AddNode commands per session.
             If count > 100 Then
                 e.Cancel = True
             Else
@@ -84,28 +86,31 @@ Private Shared Sub HandleRequestValidating(sender As Object, e As OpcRequestVali
     End If
 End Sub
 
-' DOC
+
+'DOC
 AddHandler server.RequestJudgement, AddressOf HandleRequestJudgement
-'...
-Private Shared Sub HandleRequestJudgement(sender As Object, e As OpcRequestJudgementEventArgs)
-    ' Accept outdated requests, e.g. in case the clocks of client and server differ.
+...
+Private Shared Sub HandleRequestJudgement( _
+        ByVal sender As Object, _
+        ByVal e As OpcRequestJudgementEventArgs)
+    'Accept outdated requests, e.g. in case the clocks of client and server differ.
     If e.Impeachment = OpcRequestImpeachment.Outdated Then
         e.Dismiss = True
     End If
 End Sub
 
-' DOC
+'DOC
 AddHandler server.SessionCreated, Sub(sender, e) Console.WriteLine("Session created: {0}", e.Session.Name)
 AddHandler server.SessionClosing, Sub(sender, e) Console.WriteLine("Session closing: {0}", e.Session.Name)
 
-AddHandler server.SubscriptionCreated, Sub(sender, e) Console.WriteLine(
-        "Subscription {0} created in session {1}", e.Subscription.Id, e.Subscription.Session.Name)
+AddHandler server.SubscriptionCreated, Sub(sender, e) Console.WriteLine( _
+        "Subscription {0} created in session {1}", _
+        e.Subscription.Id, _
+        e.Subscription.Session.Name)
 
-' DOC
-' Announce the expected end of the maintenance to the clients.
+'DOC
+'Announce the expected end of the maintenance to the clients.
 server.EstimatedReturnTime = DateTime.UtcNow.AddMinutes(10)
 server.Suspend()
-
-' ... maintenance ...
-
+...
 server.Resume()

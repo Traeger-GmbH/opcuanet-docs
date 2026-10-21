@@ -64,6 +64,29 @@ temperatureNode.EngineeringUnit = new OpcEngineeringUnitInfo(4408652, "°C", "de
 temperatureNode.EngineeringUnitRange = new OpcValueRange(70.8, 5.0);
 
 // DOC
+// Define the node identifier associated with the custom data type.
+[OpcDataType(id: "MachineStatus", namespaceIndex: 2)]
+internal enum MachineStatus : int
+{
+    Unknown = 0,
+    Stopped = 1,
+    Started = 2,
+    Waiting = 3,
+    Suspended = 4
+}
+ 
+...
+ 
+// MyNodeManager.cs
+protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection references)
+{
+    ...
+ 
+    // Publish a new data type node using the custom type.
+    return new IOpcNode[] { ..., new OpcDataTypeNode<MachineStatus>() };
+}
+
+// DOC
 [OpcDataType(id: "MachineStatus", namespaceIndex: 2)]
 [OpcEnum(OpcEnumType.Values)]
 internal enum MachineStatus : int
@@ -71,28 +94,32 @@ internal enum MachineStatus : int
     Unknown = 0,
     Stopped = 1,
     Started = 2,
-
+ 
     [OpcEnumMember("WaitingForOrders", Description = "Paused by Job")]
     WaitingForOrders = 3,
-
+ 
     [OpcEnumMember("Suspended", Description = "Paused by Operator")]
     Suspended = 4
 }
 
 // DOC
-var doorNode = new OpcTwoStateDiscreteNode(machineNode, "DoorOpen", false);
+var doorNode = new OpcTwoStateDiscreteNode(machineNode, "DoorOpen", value: false);
 doorNode.TrueState = "Open";
 doorNode.FalseState = "Closed";
-
-var modeNode = new OpcMultiStateDiscreteNode<uint>(machineNode, "Mode", 0u);
+ 
+var modeNode = new OpcMultiStateDiscreteNode<uint>(machineNode, "Mode", value: 0u);
 modeNode.EnumStrings = new OpcText[] { "Manual", "Automatic", "Service" };
-
-var errorNode = new OpcMultiStateValueDiscreteNode<int>(machineNode, "Error", 0);
-errorNode.EnumValues = new[] {
-    new OpcEnumValue("None", 0),
-    new OpcEnumValue("Overheated", 10)
+ 
+var errorNode = new OpcMultiStateValueDiscreteNode<int>(machineNode, "Error", value: 0);
+errorNode.EnumValues = new OpcEnumValue[] {
+    new OpcEnumValue("None", value: 0),
+    new OpcEnumValue("Overheated", value: 10)
 };
 
 // DOC
-var speedNode = new OpcAnalogUnitNode<double>(machineNode, "Speed", 0.0);
-speedNode.EngineeringUnit = new OpcEngineeringUnitInfo(5067859, "m/s", "metre per second");
+var speedNode = new OpcAnalogUnitNode<double>(machineNode, "Speed", value: 0.0);
+ 
+speedNode.EngineeringUnit = new OpcEngineeringUnitInfo(
+        unitId: 5067859,
+        displayName: "m/s",
+        description: "metre per second");

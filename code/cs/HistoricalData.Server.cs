@@ -372,9 +372,10 @@ protected override IOpcNodeHistoryProvider RetrieveNodeHistoryProvider(IOpcNode 
 {
     if (node == machineIsRunningNode)
         return machineIsRunningHistorian;
-
+ 
     return base.RetrieveNodeHistoryProvider(node);
 }
+
 
 // DOC
 public IEnumerable<OpcHistoryValue> ReadHistory(
@@ -404,9 +405,9 @@ protected override IEnumerable<OpcHistoryValue> ReadHistory(
 // DOC
 bool isModified = (options & OpcReadHistoryOptions.Modified)
         == OpcReadHistoryOptions.Modified;
-
+ 
 OpcHistoryValue[] values;
-
+ 
 if (isModified) {
     values = modifiedHistory
             .Enumerate(startTime, endTime)
@@ -418,32 +419,32 @@ else {
             .Enumerate(startTime, endTime)
             .ToArray();
 }
-
+ 
 // Return the values in reverse order in case the time flows backward.
 if (timeFlowsBackward)
     Array.Reverse(values);
-
+ 
 return values;
 
 // DOC
 public class MachineEventHistory : IOpcEventHistoryProvider
 {
     private readonly List<OpcEvent> events = new List<OpcEvent>();
-
+ 
     public MachineEventHistory(OpcObjectNode node)
     {
         this.Node = node;
         this.Node.IsHistorizingEvents = true;
     }
-
+ 
     public OpcObjectNode Node { get; }
-
+ 
     public void Add(OpcEvent historyEvent)
     {
         lock (this.events)
             this.events.Add(historyEvent);
     }
-
+ 
     public IEnumerable<OpcEvent> ReadEventHistory(
             OpcContext context,
             OpcEventFilter filter,
@@ -452,22 +453,36 @@ public class MachineEventHistory : IOpcEventHistoryProvider
             bool timeFlowsBackward,
             uint? maxCount)
     {
+        // In case the time flows backward the start time is the later one.
+        DateTime? from = timeFlowsBackward ? endTime : startTime;
+        DateTime? to = timeFlowsBackward ? startTime : endTime;
+ 
+        var result = new List<OpcEvent>();
+ 
         lock (this.events) {
-            var from = timeFlowsBackward ? endTime : startTime;
-            var to = timeFlowsBackward ? startTime : endTime;
-
-            IEnumerable<OpcEvent> result = this.events.Where(item =>
-                    (from == null || from == DateTime.MinValue || item.Time >= from)
-                    && (to == null || to == DateTime.MinValue || item.Time <= to));
-
-            if (timeFlowsBackward)
-                result = result.Reverse();
-
-            if (maxCount != null)
-                result = result.Take((int)maxCount.Value);
-
-            return result.ToArray();
+            foreach (var item in this.events) {
+                if (IsSet(from) && item.Time < from)
+                    continue;
+ 
+                if (IsSet(to) && item.Time > to)
+                    continue;
+ 
+                result.Add(item);
+            }
         }
+ 
+        if (timeFlowsBackward)
+            result.Reverse();
+ 
+        if (maxCount != null && result.Count > maxCount.Value)
+            result.RemoveRange((int)maxCount.Value, result.Count - (int)maxCount.Value);
+ 
+        return result;
+    }
+ 
+    private static bool IsSet(DateTime? time)
+    {
+        return time != null && time != DateTime.MinValue;
     }
 }
 
@@ -476,13 +491,14 @@ protected override IOpcEventHistoryProvider RetrieveEventHistoryProvider(IOpcNod
 {
     if (node == this.machineEventHistory.Node)
         return this.machineEventHistory;
-
+ 
     return base.RetrieveEventHistoryProvider(node);
 }
+
 
 // DOC
 activatedEvent.Message = "Machine started";
 activatedEvent.ReportEvent(this.SystemContext);
-
+ 
 // Stores a snapshot of the event in the event history.
 this.machineEventHistory.Add(activatedEvent.CreateEvent(this.SystemContext));

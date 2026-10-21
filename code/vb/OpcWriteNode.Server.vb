@@ -29,11 +29,13 @@ Private Function HandleWriteVariableValue( _
     Return If(WriteValueToDataSource(context.Node, value), value)
 End Function
 
+
 'DOC
 machineIsRunningNode.WriteDescriptionCallback = AddressOf HandleWriteDescription
-'...
-Private Function HandleWriteDescription(
-        context As OpcWriteAttributeValueContext,
-        value As OpcAttributeValue(Of OpcText)) As OpcAttributeValue(Of OpcText)
+...
+Private Function HandleWriteDescription( _
+        ByVal context As OpcWriteAttributeValueContext, _
+        ByVal value As OpcAttributeValue(Of OpcText)) As OpcAttributeValue(Of OpcText)
     Return If(WriteDescriptionToDataSource(context.Node, value), value)
 End Function
+

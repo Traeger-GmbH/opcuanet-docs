@@ -35,58 +35,93 @@ Public Class HandmadeMachineManager
         Return New OpcServer("opc.tcp://localhost:4840/", nodeSets, New HandmadeMachineManager())
     End Function
 
-    Protected Overrides Function CreateNodes(references As OpcNodeReferenceCollection) As IEnumerable(Of IOpcNode)
+    Protected Overrides Iterator Function CreateNodes( _
+            ByVal references As OpcNodeReferenceCollection) As IEnumerable(Of IOpcNode)
         Dim di = OpcNamespace.Create("http://opcfoundation.org/UA/DI/")
         Dim machinery = OpcNamespace.Create("http://opcfoundation.org/UA/Machinery/")
         di.Resolve(Me)
         machinery.Resolve(Me)
 
-        ' Machinery: Machines folder (i=1001)
+        'Machinery: Machines folder (i=1001).
         Dim machine = New OpcObjectNode("CNC-042")
-        references.Add(machine, machinery.GetId(1001), OpcReferenceDirection.ChildToParent, OpcReferenceType.Organizes)
 
-        ' Machinery: MachineIdentificationType (i=1012)
+        references.Add( _
+                machine, _
+                machinery.GetId(1001), _
+                direction:=OpcReferenceDirection.ChildToParent, _
+                referenceType:=OpcReferenceType.Organizes)
+
+        'Machinery: MachineIdentificationType (i=1012).
         Dim identification = New OpcObjectNode(machine, machinery.GetName("Identification"))
         identification.TypeDefinitionId = machinery.GetId(1012)
 
-        ' Mandatory properties: names, namespaces and data types from the specification
-        Dim manufacturer = New OpcTextPropertyNode(identification, di.GetName("Manufacturer"), New OpcText("Example Machines Ltd."))
-        Dim serialNumber = New OpcPropertyNode(Of String)(identification, di.GetName("SerialNumber"), OpcNodeId.Null, "SN-0042")
-        Dim instanceUri = New OpcPropertyNode(Of String)(identification, di.GetName("ProductInstanceUri"), OpcNodeId.Null, "urn:example:cnc-0042")
+        'Mandatory properties: names, namespaces and data types from the specification.
+        Dim manufacturer = New OpcTextPropertyNode( _
+                identification, _
+                di.GetName("Manufacturer"), _
+                value:=New OpcText("Example Machines Ltd."))
 
-        ' Interfaces of the type: IMachineVendorNameplateType (i=1010), IMachineTagNameplateType (i=1011)
-        references.Add(identification, machinery.GetId(1010), OpcReferenceDirection.ParentToChild, HasInterface)
-        references.Add(identification, machinery.GetId(1011), OpcReferenceDirection.ParentToChild, HasInterface)
+        Dim serialNumber = New OpcPropertyNode(Of String)( _
+                identification, _
+                di.GetName("SerialNumber"), _
+                id:=OpcNodeId.Null, _
+                value:="SN-0042")
 
-        Return New IOpcNode() {machine}
+        Dim instanceUri = New OpcPropertyNode(Of String)( _
+                identification, _
+                di.GetName("ProductInstanceUri"), _
+                id:=OpcNodeId.Null, _
+                value:="urn:example:cnc-0042")
+
+        'Interfaces of the type: IMachineVendorNameplateType (i=1010),
+        'IMachineTagNameplateType (i=1011).
+        references.Add( _
+                identification, _
+                machinery.GetId(1010), _
+                direction:=OpcReferenceDirection.ParentToChild, _
+                referenceTypeId:=HasInterface)
+
+        references.Add( _
+                identification, _
+                machinery.GetId(1011), _
+                direction:=OpcReferenceDirection.ParentToChild, _
+                referenceTypeId:=HasInterface)
+
+        Yield machine
     End Function
 End Class
 
-'DOC
-nodeSets.ImplementNodeCallback = _
-        Sub(context, node)
-            Dim method = TryCast(node, OpcMethodNode)
 
-            If method IsNot Nothing AndAlso method.Name.Value = "TransferToDevice" Then
-                method.Command = New TransferToDeviceCommand()
-            End If
-        End Sub
+'DOC
+nodeSets.ImplementNodeCallback = Sub(context, node)
+    Dim method = TryCast(node, OpcMethodNode)
+
+    If method IsNot Nothing AndAlso method.Name.Value = "TransferToDevice" Then
+        method.Command = New TransferToDeviceCommand()
+    End If
+End Sub
 ...
 Public NotInheritable Class TransferToDeviceCommand
     Implements IOpcMethodCommand
 
-    Public Function CanExecute(context As OpcContext) As Boolean Implements IOpcMethodCommand.CanExecute
+    Public Function CanExecute(ByVal context As OpcContext) As Boolean _
+            Implements IOpcMethodCommand.CanExecute
         Return True
     End Function
 
-    Public Function CanUserExecute(context As OpcContext) As Boolean Implements IOpcMethodCommand.CanUserExecute
+    Public Function CanUserExecute(ByVal context As OpcContext) As Boolean _
+            Implements IOpcMethodCommand.CanUserExecute
         Return True
     End Function
 
-    Public Sub Execute(context As OpcMethodContext, inputArguments As IList(Of Object), outputArguments As IList(Of Object)) Implements IOpcMethodCommand.Execute
-        ' Order and types of the arguments as defined by the specification
-        outputArguments(0) = 1   ' TransferID
-        outputArguments(1) = 0   ' InitTransferStatus
+    Public Sub Execute( _
+            ByVal context As OpcMethodContext, _
+            ByVal inputArguments As IList(Of Object), _
+            ByVal outputArguments As IList(Of Object)) _
+            Implements IOpcMethodCommand.Execute
+        'Order and types of the arguments as defined by the specification.
+        outputArguments(0) = 1 'TransferID
+        outputArguments(1) = 0 'InitTransferStatus
     End Sub
 End Class
 
@@ -94,18 +129,19 @@ End Class
 Public Class DeviceTransferServices
     Inherits OpcTransferServicesNode
 
-    Public Sub New(parent As IOpcNode)
+    Public Sub New(ByVal parent As IOpcNode)
         MyBase.New(parent, "TransferServices")
     End Sub
 
     Public Overrides Sub TransferToDevice( _
-            methodContext As OpcMethodContext, _
+            ByVal methodContext As OpcMethodContext, _
             ByRef transferID As Integer, _
             ByRef initTransferStatus As Integer)
         transferID = 1
         initTransferStatus = 0
     End Sub
 End Class
+
 
 'DOC
 Using client = New OpcMachineryClient("opc.tcp://localhost:4840/")

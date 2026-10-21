@@ -42,7 +42,8 @@ var machineStateNode = new MachineStateMachineNode(machineNode, "State");
 // DOC
 if (machineStateNode.CanChangeStateTo(server.SystemContext, MachineState.Starting))
     machineStateNode.ChangeStateTo(server.SystemContext, MachineState.Starting);
-
+ 
 // Throws an InvalidOperationException, because there is no transition
 // from the state Starting to the state Stopped.
 machineStateNode.ChangeStateTo(server.SystemContext, MachineState.Stopped);
+

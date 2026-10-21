@@ -3,25 +3,25 @@ public class PlcNodeManager : OpcNodeManager
 {
     private OpcDataVariableNode<double> temperatureNode;
     private OpcDataVariableNode<int> speedNode;
-
+ 
     public PlcNodeManager()
         : base("http://example.com/plc")
     {
     }
-
+ 
     protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection references)
     {
         var machine = new OpcObjectNode(new OpcName("Machine", this.DefaultNamespaceIndex));
         references.Add(machine, OpcObjectTypes.ObjectsFolder);
-
+ 
         this.temperatureNode = new OpcDataVariableNode<double>(machine, "Temperature");
         this.speedNode = new OpcDataVariableNode<int>(machine, "Speed");
-
+ 
         // Clients may write the speed; the value is forwarded to the device.
         this.speedNode.AccessLevel = OpcAccessLevel.CurrentReadOrWrite;
         this.speedNode.UserAccessLevel = OpcAccessLevel.CurrentReadOrWrite;
         this.speedNode.WriteVariableValueCallback = this.HandleWriteSpeed;
-
+ 
         yield return machine;
     }
 }
@@ -39,7 +39,7 @@ public void Update(PlcReading reading)
         this.temperatureNode.Status.Update(OpcStatusCode.BadCommunicationError);
         this.temperatureNode.Timestamp = DateTime.UtcNow;
     }
-
+ 
     this.temperatureNode.ApplyChanges(this.SystemContext);
 }
 
@@ -47,12 +47,13 @@ public void Update(PlcReading reading)
 using (var plcManager = new PlcNodeManager())
 using (var server = new OpcServer("opc.tcp://localhost:4840/", plcManager)) {
     server.Start();
-
+ 
     while (!cancellation.IsCancellationRequested) {
         plcManager.Update(Plc.ReadTemperature());
-        Thread.Sleep(1000);
+        Thread.Sleep(millisecondsTimeout: 1000);
     }
 }
+
 
 // DOC
 private OpcVariableValue<object> HandleWriteSpeed(
@@ -63,10 +64,10 @@ private OpcVariableValue<object> HandleWriteSpeed(
         // The client receives this status as the result of its write request.
         return new OpcVariableValue<object>(
                 value.Value,
-                DateTime.UtcNow,
-                OpcStatusCode.BadCommunicationError);
+                timestamp: DateTime.UtcNow,
+                statusCode: OpcStatusCode.BadCommunicationError);
     }
-
+ 
     return value;
 }
 

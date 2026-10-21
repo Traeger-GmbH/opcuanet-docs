@@ -63,8 +63,8 @@ temperatureNode.InstrumentRange = New OpcValueRange(80.0, -40.0)
 temperatureNode.EngineeringUnit = New OpcEngineeringUnitInfo(4408652, "°C", "degree Celsius")
 temperatureNode.EngineeringUnitRange = New OpcValueRange(70.8, 5.0)
 
-' DOC
-' Define the node identifier associated with the custom data type.
+'DOC
+'Define the node identifier associated with the custom data type.
 <OpcDataType("MachineStatus", 2)>
 Friend Enum MachineStatus As Integer
     Unknown = 0
@@ -76,16 +76,17 @@ End Enum
 
 ...
 
-' MyNodeManager.vb
-Protected Overrides Function CreateNodes(references As OpcNodeReferenceCollection) As IEnumerable(Of IOpcNode)
-
+'MyNodeManager.vb
+Protected Overrides Function CreateNodes( _
+        ByVal references As OpcNodeReferenceCollection) As IEnumerable(Of IOpcNode)
     ...
 
-    ' Publish a new data type node using the custom type.
+    'Publish a new data type node using the custom type.
     Return New IOpcNode() { ..., New OpcDataTypeNode(Of MachineStatus)() }
 End Function
 
-' DOC
+
+'DOC
 <OpcDataType("MachineStatus", 2)>
 <OpcEnum(OpcEnumType.Values)>
 Friend Enum MachineStatus As Integer
@@ -100,20 +101,25 @@ Friend Enum MachineStatus As Integer
     Suspended = 4
 End Enum
 
-' DOC
-Dim doorNode = New OpcTwoStateDiscreteNode(machineNode, "DoorOpen", False)
+
+'DOC
+Dim doorNode = New OpcTwoStateDiscreteNode(machineNode, "DoorOpen", value:=False)
 doorNode.TrueState = "Open"
 doorNode.FalseState = "Closed"
 
-Dim modeNode = New OpcMultiStateDiscreteNode(Of UInteger)(machineNode, "Mode", 0UI)
+Dim modeNode = New OpcMultiStateDiscreteNode(Of UInteger)(machineNode, "Mode", value:=0UI)
 modeNode.EnumStrings = New OpcText() {"Manual", "Automatic", "Service"}
 
-Dim errorNode = New OpcMultiStateValueDiscreteNode(Of Integer)(machineNode, "Error", 0)
-errorNode.EnumValues = {
-    New OpcEnumValue("None", 0),
-    New OpcEnumValue("Overheated", 10)
+Dim errorNode = New OpcMultiStateValueDiscreteNode(Of Integer)(machineNode, "Error", value:=0)
+errorNode.EnumValues = New OpcEnumValue() { _
+    New OpcEnumValue("None", value:=0), _
+    New OpcEnumValue("Overheated", value:=10) _
 }
 
-' DOC
-Dim speedNode = New OpcAnalogUnitNode(Of Double)(machineNode, "Speed", 0.0)
-speedNode.EngineeringUnit = New OpcEngineeringUnitInfo(5067859, "m/s", "metre per second")
+'DOC
+Dim speedNode = New OpcAnalogUnitNode(Of Double)(machineNode, "Speed", value:=0.0)
+
+speedNode.EngineeringUnit = New OpcEngineeringUnitInfo( _
+        unitId:=5067859, _
+        displayName:="m/s", _
+        description:="metre per second")

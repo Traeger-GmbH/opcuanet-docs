@@ -20,6 +20,7 @@ if (license.IsExpired)
 
 // DOC
 ILicenseInfo license = Opc.UaFx.Server.Licenser.LicenseInfo;
-
+ 
 if (license.IsExpired)
     Console.WriteLine("The OPC UA SDK license is expired!");
+

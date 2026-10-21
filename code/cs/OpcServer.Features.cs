@@ -1,56 +1,64 @@
 // DOC
 DateTime endTime = DateTime.UtcNow;
 DateTime startTime = endTime.AddHours(-8);
-
+ 
 var averagePerHour = client.ReadNodeHistoryProcessed(
         startTime,
         endTime,
         OpcAggregateType.Average,
-        3600000,
-        "ns=2;s=Machine/Temperature");
-
+        aggregateInterval: 3600000,
+        nodeId: "ns=2;s=Machine/Temperature");
+ 
 OpcHistoryValue atNoon = client.ReadNodeHistoryAtTime(
-        DateTime.UtcNow.Date.AddHours(12),
-        "ns=2;s=Machine/Temperature");
+        time: DateTime.UtcNow.Date.AddHours(12),
+        nodeId: "ns=2;s=Machine/Temperature");
 
 // DOC
 public class MachineNodeManager : OpcNodeManager
 {
-    private readonly Dictionary<OpcNodeId, int> monitored = new Dictionary<OpcNodeId, int>();
-
+    private readonly Dictionary<OpcNodeId, int> monitored
+            = new Dictionary<OpcNodeId, int>();
+ 
     public MachineNodeManager()
         : base("http://example.com/machine")
     {
         this.MonitoredItemCreated += this.HandleMonitoredItemCreated;
         this.MonitoredItemDeleted += this.HandleMonitoredItemDeleted;
     }
-
+ 
     public bool IsMonitored(OpcNodeId nodeId)
     {
         lock (this.monitored)
             return this.monitored.ContainsKey(nodeId);
     }
-
-    private void HandleMonitoredItemCreated(object sender, OpcMonitoredItemEventArgs e)
+ 
+    private void HandleMonitoredItemCreated(
+            object sender,
+            OpcMonitoredItemEventArgs e)
     {
         if (e.Item.Attribute != OpcAttribute.Value)
             return;
-
+ 
         lock (this.monitored) {
-            this.monitored.TryGetValue(e.Item.NodeId, out int count);
+            int count;
+            this.monitored.TryGetValue(e.Item.NodeId, out count);
             this.monitored[e.Item.NodeId] = count + 1;
         }
     }
-
-    private void HandleMonitoredItemDeleted(object sender, OpcMonitoredItemEventArgs e)
+ 
+    private void HandleMonitoredItemDeleted(
+            object sender,
+            OpcMonitoredItemEventArgs e)
     {
         if (e.Item.Attribute != OpcAttribute.Value)
             return;
-
+ 
         lock (this.monitored) {
-            if (!this.monitored.TryGetValue(e.Item.NodeId, out int count))
+            int count;
+ 
+            if (!this.monitored.TryGetValue(e.Item.NodeId, out count))
                 return;
-
+ 
             if (count > 1)
                 this.monitored[e.Item.NodeId] = count - 1;
             else
@@ -58,6 +66,8 @@ public class MachineNodeManager : OpcNodeManager
         }
     }
 }
+
+
 
 // DOC
 public class DeviceNodeManager : OpcNodeManager
@@ -68,46 +78,75 @@ public class DeviceNodeManager : OpcNodeManager
         this.BeforeRead += this.HandleBeforeRead;
         this.AfterWrite += this.HandleAfterWrite;
     }
-
+ 
     private void HandleBeforeRead(object sender, OpcNodeAccessEventArgs e)
     {
-        OpcDataVariableNode[] nodes = e.Tokens
-                .Where(token => token.Attribute == OpcAttribute.Value)
-                .Select(token => token.Node)
-                .OfType<OpcDataVariableNode>()
-                .Distinct()
-                .ToArray();
-
+        var nodes = new List<OpcDataVariableNode>();
+ 
+        foreach (var token in e.Tokens) {
+            var node = token.Node as OpcDataVariableNode;
+ 
+            if (token.Attribute == OpcAttribute.Value && node != null && !nodes.Contains(node))
+                nodes.Add(node);
+        }
+ 
+        var names = new string[nodes.Count];
+ 
+        for (int index = 0; index < nodes.Count; index++)
+            names[index] = nodes[index].SymbolicName;
+ 
         // Device stands for the connection to the data source:
         // one request for all nodes of the client request.
-        object[] values = Device.Read(nodes.Select(node => node.SymbolicName).ToArray());
-
-        for (int index = 0; index < nodes.Length; index++)
+        object[] values = Device.Read(names);
+ 
+        for (int index = 0; index < nodes.Count; index++)
             nodes[index].Value = values[index];
     }
-
+ 
     private void HandleAfterWrite(object sender, OpcNodeAccessEventArgs e)
     {
-        var written = e.Tokens
-                .Where(token => token.Attribute == OpcAttribute.Value && token.Result.IsGood)
-                .ToArray();
-
+        var names = new List<string>();
+        var values = new List<object>();
+ 
+        foreach (var token in e.Tokens) {
+            if (token.Attribute == OpcAttribute.Value && token.Result.IsGood) {
+                names.Add(token.Node.SymbolicName);
+                values.Add(token.Value.Value);
+            }
+        }
+ 
         // One request to the device for all values written by the client.
-        Device.Write(
-                written.Select(token => token.Node.SymbolicName).ToArray(),
-                written.Select(token => token.Value.Value).ToArray());
+        Device.Write(names.ToArray(), values.ToArray());
     }
 }
 
+
+
+
 // DOC
 var temperature = new OpcDataVariableNode<double>("Temperature");
-temperature.DisplayName = new OpcText("Temperature", "en-US", "Temperature.DisplayName");
-temperature.Description = new OpcText("Temperature of the machine", "en-US", "Temperature.Description");
-
+ 
+temperature.DisplayName = new OpcText(
+        "Temperature",
+        cultureName: "en-US",
+        key: "Temperature.DisplayName");
+ 
+temperature.Description = new OpcText(
+        "Temperature of the machine",
+        cultureName: "en-US",
+        key: "Temperature.Description");
+ 
 using (var server = new OpcServer("opc.tcp://localhost:4840/", temperature)) {
-    server.Globalization.AddResource("de-DE", "Temperature.DisplayName", "Temperatur");
-    server.Globalization.AddResource("de-DE", "Temperature.Description", "Temperatur der Maschine");
-
+    server.Globalization.AddResource(
+            cultureName: "de-DE",
+            key: "Temperature.DisplayName",
+            value: "Temperatur");
+ 
+    server.Globalization.AddResource(
+            cultureName: "de-DE",
+            key: "Temperature.Description",
+            value: "Temperatur der Maschine");
+ 
     server.Start();
 }
 
@@ -116,20 +155,21 @@ OpcAutomatism.RaiseModelChangeEvents = true;
 
 // DOC
 var machine = new OpcObjectNode(machines, "Machine3");
-new OpcDataVariableNode<double>(machine, "Temperature");
-
+var temperature = new OpcDataVariableNode<double>(machine, "Temperature");
+ 
 manager.AddNode(server.SystemContext, machine);
 
 // DOC
 machines.SuspendModelChangeEvents(recursive: true);
-
-foreach (string name in new[] { "Machine4", "Machine5", "Machine6" })
+ 
+foreach (var name in new string[] { "Machine4", "Machine5", "Machine6" })
     manager.AddNode(server.SystemContext, new OpcObjectNode(machines, name));
-
+ 
 machines.ResumeModelChangeEvents(recursive: true);
 
+
 // DOC
-var startJob = new OpcMethodNode(
+var startJobNode = new OpcMethodNode(
         machine,
         "StartJob",
         new Func<string, Task<int>>(StartJobAsync));
@@ -149,66 +189,75 @@ public class JobNodeManager : OpcNodeManager
         : base("http://example.com/jobs")
     {
     }
-
+ 
     protected override bool UseAsyncMethodCalls
     {
-        get => true;
+        get { return true; }
     }
 }
+
 
 // DOC
 using (var server = new OpcServer("opc.tcp://localhost:4840/")) {
     OpcNamespace[] namespaces = server.RegisterNamespaces(
             "http://example.com/machine",
             "http://example.com/plant");
-
+ 
     Console.WriteLine("Machine: ns={0}", namespaces[0].Index);
     Console.WriteLine("Plant: ns={0}", namespaces[1].Index);
-
+ 
     server.Start();
 }
 
 // DOC
-var profile = new OpcDataVariableNode<double[]>(machine, "Profile", new double[100]);
-var heatMap = new OpcDataVariableNode<double[,]>(machine, "HeatMap", new double[16, 16]);
+var profile = new OpcDataVariableNode<double[]>(
+        machine,
+        "Profile",
+        value: new double[100]);
+ 
+var heatMap = new OpcDataVariableNode<double[,]>(
+        machine,
+        "HeatMap",
+        value: new double[16, 16]);
 
 // DOC
 double[,] values = heatMap.Value;
 values[3, 4] = 72.5;
-
+ 
 heatMap.Value = values;
 heatMap.ApplyChanges(server.SystemContext);
 
 // DOC
-var tags = new[] {
-    new { Name = "Temperature", Type = "double" },
-    new { Name = "IsRunning", Type = "bool" },
-    new { Name = "JobName", Type = "string" }
+// Name and data type of each variable, e.g. read from a configuration file.
+var tags = new Dictionary<string, string> {
+    { "Temperature", "double" },
+    { "IsRunning", "bool" },
+    { "JobName", "string" }
 };
-
-var server = new OpcServer("opc.tcp://localhost:4840/", space => {
+ 
+var server = new OpcServer("opc.tcp://localhost:4840/", addressSpace => {
     var machine = new OpcFolderNode("Machine");
-
+ 
     foreach (var tag in tags) {
-        switch (tag.Type) {
+        switch (tag.Value) {
             case "double":
-                new OpcDataVariableNode<double>(machine, tag.Name);
+                new OpcDataVariableNode<double>(machine, tag.Key);
                 break;
             case "bool":
-                new OpcDataVariableNode<bool>(machine, tag.Name);
+                new OpcDataVariableNode<bool>(machine, tag.Key);
                 break;
             default:
-                new OpcDataVariableNode<string>(machine, tag.Name);
+                new OpcDataVariableNode<string>(machine, tag.Key);
                 break;
         }
     }
-
-    space.AddNode(machine);
+ 
+    addressSpace.AddNode(machine);
 });
 
 // DOC
 OpcServerInfo info = server.GetInfo();
-
+ 
 Console.WriteLine("{0} {1} {2}", info.CompanyName, info.ProductName, info.ProductVersion);
 Console.WriteLine("Product URI: {0}", info.ProductUri);
 
@@ -224,14 +273,14 @@ public class MachineServer : OpcServer
         : base("opc.tcp://localhost:4840/")
     {
     }
-
+ 
     protected override OpcServerInfo GetInfoCore()
     {
         return new OpcServerInfo(
-                "Example Machines Ltd.",
-                "Example Machine Server",
-                new Version(1, 2, 0, 0),
-                new DateTime(2026, 1, 15),
-                new Uri("urn:example:machine-server"));
+                companyName: "Example Machines Ltd.",
+                productName: "Example Machine Server",
+                productVersion: new Version(1, 2, 0, 0),
+                buildDate: new DateTime(2026, 1, 15),
+                productUri: new Uri("urn:example:machine-server"));
     }
 }

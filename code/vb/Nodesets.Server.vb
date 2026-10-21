@@ -36,47 +36,50 @@ Protected Overrides Sub ImplementNode(node As IOpcNode)
     End If
 End Sub
 
-' DOC
+'DOC
 Protected Overrides Iterator Function ImportNodes() As IEnumerable(Of OpcNodeSet)
     Yield OpcNodeSet.Load(".\umati.xml")
     Yield OpcNodeSet.Load(".\umati-instances.xml")
 End Function
 
-' DOC
+
+'DOC
 Dim lampTypeId = OpcNodeId.Parse("ns=2;i=1041")
 Dim random = New Random()
 
-Dim umatiManager = OpcNodeSetManager.Create(
-        OpcNodeSet.Load(".\umati.xml"),
+Dim umatiManager = OpcNodeSetManager.Create( _
+        OpcNodeSet.Load(".\umati.xml"), _
         OpcNodeSet.Load(".\umati-instances.xml"))
 
-umatiManager.ImplementNodeCallback =
-    Sub(context, node)
-        Dim variableNode = TryCast(node, OpcVariableNode)
+umatiManager.ImplementNodeCallback = Sub(context, node)
+    Dim variableNode = TryCast(node, OpcVariableNode)
 
-        If variableNode IsNot Nothing AndAlso variableNode.Name = "2:Status" Then
-            Dim objectNode = TryCast(variableNode.Parent, OpcObjectNode)
+    If variableNode Is Nothing OrElse variableNode.Name <> "2:Status" Then
+        Return
+    End If
 
-            If objectNode IsNot Nothing AndAlso objectNode.TypeDefinitionId = lampTypeId Then
-                variableNode.ReadVariableValueCallback =
-                    Function(readContext, value) New OpcVariableValue(Of Object)(random.Next(0, 2))
-            End If
-        End If
-    End Sub
+    Dim objectNode = TryCast(variableNode.Parent, OpcObjectNode)
 
-' DOC
-Protected Overrides Sub ImplementNode(node As IOpcNode)
-    ' Keeps the default implementation, e.g. the references to the interfaces of the node.
-    MyBase.ImplementNode(node)
-
-    ' Implement your Node(s) here.
+    If objectNode IsNot Nothing AndAlso objectNode.TypeDefinitionId = lampTypeId Then
+        variableNode.ReadVariableValueCallback = Function(readContext, value) _
+                New OpcVariableValue(Of Object)(random.Next(minValue:=0, maxValue:=2))
+    End If
 End Sub
 
-' DOC
+'DOC
+Protected Overrides Sub ImplementNode(ByVal node As IOpcNode)
+    'Keeps the default implementation, e.g. the references to the interfaces of the node.
+    MyBase.ImplementNode(node)
+
+    'Implement your Node(s) here.
+End Sub
+
+
+'DOC
 umatiManager.ImportOptions = OpcNodeSetImportOptions.CompleteDataTypeDefinitionFields _
         Or OpcNodeSetImportOptions.CreateNonGenericNodeInstances
 
-' DOC
+'DOC
 Using stream = File.OpenRead(".\umati.xml")
     Dim nodeSet = OpcNodeSet.Load(stream)
 

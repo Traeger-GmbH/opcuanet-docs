@@ -16,14 +16,15 @@ server.ApplicationName = "MyDifferentServerAppName"
 ' DOC
 server.ApplicationUri = New Uri("<ApplicationUri>")
 
-' DOC
+'DOC
 Dim certificate = OpcCertificateManager.LoadCertificate("MyServerCertificate.pfx")
 server.Certificate = certificate
 
-' DOC
-Dim settings = New OpcCertificateSettings("MyServerAppName") With {
-    .ApplicationUri = New Uri("urn:localhost:MyServerAppName"),
-    .Lifetime = 60 ' Months, default: 600
+'DOC
+'Lifetime in months, default: 600.
+Dim settings = New OpcCertificateSettings("MyServerAppName") With { _
+    .ApplicationUri = New Uri("urn:localhost:MyServerAppName"), _
+    .Lifetime = 60 _
 }
 
 settings.DomainNames.Add("localhost")
@@ -32,15 +33,15 @@ settings.DomainNames.Add("myserver.mydomain.com")
 Dim certificate = OpcCertificateManager.CreateCertificate(settings)
 OpcCertificateManager.SaveCertificate("MyServerCertificate.pfx", certificate)
 
-' DOC
+'DOC
 Using discoveryServer = New OpcDiscoveryServer("opc.tcp://localhost:4840/")
     discoveryServer.Start()
 
     Console.WriteLine("Press any key to stop the discovery server.")
-    Console.ReadKey(True)
+    Console.ReadKey(intercept:=True)
 End Using
 
-' DOC
+'DOC
 Using discovery = New OpcDiscoveryClient("opc.tcp://localhost:4840/")
     For Each application In discovery.DiscoverServers()
         Console.WriteLine("{0}: {1}", application.Name, application.Uri)

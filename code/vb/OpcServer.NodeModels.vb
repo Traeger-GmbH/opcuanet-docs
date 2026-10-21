@@ -46,8 +46,8 @@ Dim model As OpcNodeModel = OpcNodeModel _
         .CreateLike(template)
 
 'DOC
-' MachineIdentificationType defines its own property "Model" (product model).
-' The node model is available via the base class OpcNode.
+'MachineIdentificationType defines its own property "Model" (product model).
+'The node model is available via the base class OpcNode.
 Dim nodeModel As OpcNodeModel = CType(identification, OpcNode).Model
 
 Console.WriteLine(nodeModel.Directive)

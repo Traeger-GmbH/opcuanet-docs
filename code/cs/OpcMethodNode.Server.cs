@@ -76,15 +76,11 @@ private int StartMachine(
 var startMethodNode = new OpcMethodNode(
         machineNode,
         "StartMachine",
-        new Func<OpcMethodContext, int, int>(this.StartMachine));
+        new Func<int>(this.StartMachine));
 ...
-private int StartMachine(OpcMethodContext context, int reasonNumber)
+private int StartMachine()
 {
     // Your code to execute.
-
-    this.machineStateVariable.Value = "Started";
-    this.machineStateVariable.ApplyChanges(context);
-
     return statusCode;
 }
 
@@ -92,9 +88,55 @@ private int StartMachine(OpcMethodContext context, int reasonNumber)
 var startMethodNode = new OpcMethodNode(
         machineNode,
         "StartMachine",
+        new Func<int, string, int>(this.StartMachine));
+...
+private int StartMachine(int reasonNumber, string operatorName)
+{
+    // Your code to execute.
+    return statusCode;
+}
+
+
+// DOC
+var startMethodNode = new OpcMethodNode(
+        machineNode,
+        "StartMachine",
+        new Func<OpcMethodContext, int, int>(this.StartMachine));
+...
+private int StartMachine(OpcMethodContext context, int reasonNumber)
+{
+    // Your code to execute.
+ 
+    this.machineStateVariable.Value = "Started";
+    this.machineStateVariable.ApplyChanges(context);
+ 
+    return statusCode;
+}
+
+
+// DOC
+[return: OpcArgument("Result", Description = "The result code of the machine driver.")]
+private int StartMachine(
+        [OpcArgument("ReasonNumber", Description = "0: Maintenance, 1: Manufacturing, 2: Service")]
+        int reasonNumber,
+        [OpcArgument("OperatorName", Description = "Optional. Name of the operator of the current shift.")]
+        string operatorName)
+{
+    // Your code to execute.
+    return 10;
+}
+
+// DOC
+var startMethodNode = new OpcMethodNode(
+        machineNode,
+        "StartMachine",
         OpcMethodCommands.Execute(this.StartMachine),
-        new[] { new OpcArgument("ReasonNumber", typeof(int), "0: Maintenance, 1: Manufacturing") },
-        new OpcArgument("Result", typeof(int), "The result code of the machine driver."));
+        new OpcArgument[] {
+            new OpcArgument("ReasonNumber", typeof(int), description: "0: Maintenance, 1: Manufacturing")
+        },
+        new OpcArgument[] {
+            new OpcArgument("Result", typeof(int), description: "The result code of the machine driver.")
+        });
 ...
 private OpcResult StartMachine(
         OpcMethodContext context,
@@ -102,7 +144,7 @@ private OpcResult StartMachine(
         IList<object> outputArguments)
 {
     var reasonNumber = (int)inputArguments[0];
-
+ 
     // Your code to execute.
     outputArguments[0] = statusCode;
     return new OpcResult(OpcStatusCode.Good);

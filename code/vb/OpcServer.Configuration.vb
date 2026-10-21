@@ -121,92 +121,97 @@ End If
 Dim server As New OpcServer("opc.tcp://localhost:4840/")
 server.Address = New Uri("opc.tcp://localhost:4840/")
 
-' DOC
-Dim configuration = OpcApplicationConfiguration.LoadServerConfigFile("MyServerAppNameConfig.xml")
+'DOC
+Dim configuration = OpcApplicationConfiguration.LoadServerConfigFile( _
+        "MyServerAppNameConfig.xml")
 
-' The method returns a null reference in case the file could not be loaded.
+'The method returns a null reference in case the file could not be loaded.
 If configuration Is Nothing Then
     Throw New InvalidOperationException("The server configuration could not be loaded.")
 End If
 
 server.Configuration = configuration
 
-' DOC
-' Default: Value of AssemblyTitleAttribute of entry assembly.
+'DOC
+'Default: Value of AssemblyTitleAttribute of entry assembly.
 server.ApplicationName = "MyServerAppName"
 
-' Default: A null reference to use the URI of the application certificate.
-' The value is used to create a new application certificate.
+'Default: A null reference to use the URI of the application certificate.
+'The value is used to create a new application certificate.
 server.ApplicationUri = New Uri("urn:localhost:MyServerAppName")
 
-' DOC
-' Default: ".\CertificateStores\App"
+'DOC
+'Default: ".\CertificateStores\App"
 server.CertificateStores.ApplicationStore.Path _
         = "%LocalApplicationData%\MyServerAppName\App Certificates"
 
-' Default: ".\CertificateStores\Rejected"
+'Default: ".\CertificateStores\Rejected"
 server.CertificateStores.RejectedStore.Path _
         = "%LocalApplicationData%\MyServerAppName\Rejected Certificates"
 
-' Default: ".\CertificateStores\Trusted"
+'Default: ".\CertificateStores\Trusted"
 server.CertificateStores.TrustedIssuerStore.Path _
         = "%LocalApplicationData%\MyServerAppName\Trusted Issuer Certificates"
 
-' Default: ".\CertificateStores\Trusted"
+'Default: ".\CertificateStores\Trusted"
 server.CertificateStores.TrustedPeerStore.Path _
         = "%LocalApplicationData%\MyServerAppName\Trusted Peer Certificates"
 
-' DOC
+'DOC
 Dim certificate = OpcCertificateManager.LoadCertificate("MyServerCertificate.pfx")
 
-' DOC
-Dim certificate = OpcCertificateManager.LoadCertificate("MyServerCertificate.pfx", "password")
+'DOC
+Dim certificate = OpcCertificateManager.LoadCertificate( _
+        "MyServerCertificate.pfx", _
+        password:="password")
 
-' DOC
-Dim settings = New OpcCertificateSettings("MyServerAppName") With {
-    .ApplicationUri = New Uri("urn:localhost:MyServerAppName"),
-    .Lifetime = 60 ' Months, default: 600
+'DOC
+'Lifetime in months, default: 600.
+Dim settings = New OpcCertificateSettings("MyServerAppName") With { _
+    .ApplicationUri = New Uri("urn:localhost:MyServerAppName"), _
+    .Lifetime = 60 _
 }
 
 settings.DomainNames.Add("localhost")
 
 Dim certificate = OpcCertificateManager.CreateCertificate(settings)
 
-' DOC
+'DOC
 server.RegisterAddress("https://mydomain.com/")
 server.RegisterAddress("opc.tcp://192.168.0.123:12345/")
 
-' DOC
+'DOC
 server.UnregisterAddress("https://mydomain.com/")
 
-' server.Address becomes: "opc.tcp://192.168.0.123:12345/"
+'server.Address becomes: "opc.tcp://192.168.0.123:12345/"
 server.UnregisterAddress("opc.tcp://localhost:4840/")
 
-' DOC
-server.Security.EndpointPolicies.Add(New OpcSecurityPolicy(
-    OpcSecurityMode.Sign, OpcSecurityAlgorithm.Basic256Sha256))
+'DOC
+server.Security.EndpointPolicies.Add(New OpcSecurityPolicy( _
+        OpcSecurityMode.Sign, _
+        OpcSecurityAlgorithm.Basic256Sha256))
 
-' DOC
-' Default: OpcAddressScope.IPvX (IPv4 and IPv6)
+'DOC
+'Default: OpcAddressScope.IPvX (IPv4 and IPv6)
 server.Binding.AddressScope = OpcAddressScope.IPv4
 
-' Default: empty (bind to all network interfaces of the address scope)
+'Default: empty (bind to all network interfaces of the address scope)
 server.Binding.Addresses.Add(IPAddress.Parse("192.168.0.123"))
 
-' Default: True (only one process can bind to the port)
+'Default: True (only one process can bind to the port)
 server.Binding.UseExclusiveAddress = False
 
-' DOC
+'DOC
 server.Security.CertificateValidationRules _
         = OpcCertificateValidationRules.RejectSHA1Signed _
         Or OpcCertificateValidationRules.DisableBackwardsCompatibleValidation
 
-' DOC
-server.Transport.MaxStringLength = 1048576      ' Default: 65535
-server.Transport.MaxByteStringLength = 10485760 ' Default: 5242880
-server.Transport.MaxArrayLength = 1000000       ' Default: 65535
-server.Transport.MaxMessageSize = 20971520      ' Default: 10485760
+'DOC
+server.Transport.MaxStringLength = 1048576      'Default: 65535
+server.Transport.MaxByteStringLength = 10485760 'Default: 5242880
+server.Transport.MaxArrayLength = 1000000       'Default: 65535
+server.Transport.MaxMessageSize = 20971520      'Default: 10485760
 
-' DOC
-' Default: False (the server does not announce any operation limits)
+'DOC
+'Default: False (the server does not announce any operation limits)
 server.OperationLimits.AutoDetermineLimits = True

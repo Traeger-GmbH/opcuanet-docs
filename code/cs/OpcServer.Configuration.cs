@@ -122,18 +122,20 @@ var server = new OpcServer("opc.tcp://localhost:4840/");
 server.Address = new Uri("opc.tcp://localhost:4840/");
 
 // DOC
-var configuration = OpcApplicationConfiguration.LoadServerConfigFile("MyServerAppNameConfig.xml");
-
+var configuration = OpcApplicationConfiguration.LoadServerConfigFile(
+        "MyServerAppNameConfig.xml");
+ 
 // The method returns a null reference in case the file could not be loaded.
 if (configuration == null)
     throw new InvalidOperationException("The server configuration could not be loaded.");
-
+ 
 server.Configuration = configuration;
+
 
 // DOC
 // Default: Value of AssemblyTitleAttribute of entry assembly.
 server.ApplicationName = "MyServerAppName";
-
+ 
 // Default: A null reference to use the URI of the application certificate.
 // The value is used to create a new application certificate.
 server.ApplicationUri = new Uri("urn:localhost:MyServerAppName");
@@ -142,30 +144,36 @@ server.ApplicationUri = new Uri("urn:localhost:MyServerAppName");
 // Default: ".\CertificateStores\App"
 server.CertificateStores.ApplicationStore.Path
         = @"%LocalApplicationData%\MyServerAppName\App Certificates";
-
+ 
 // Default: ".\CertificateStores\Rejected"
 server.CertificateStores.RejectedStore.Path
         = @"%LocalApplicationData%\MyServerAppName\Rejected Certificates";
-
+ 
 // Default: ".\CertificateStores\Trusted"
 server.CertificateStores.TrustedIssuerStore.Path
         = @"%LocalApplicationData%\MyServerAppName\Trusted Issuer Certificates";
-
+ 
 // Default: ".\CertificateStores\Trusted"
 server.CertificateStores.TrustedPeerStore.Path
         = @"%LocalApplicationData%\MyServerAppName\Trusted Peer Certificates";
 
 // DOC
-var certificate = OpcCertificateManager.LoadCertificate("MyServerCertificate.pfx", "password");
+var certificate = OpcCertificateManager.LoadCertificate("MyServerCertificate.pfx");
 
 // DOC
+var certificate = OpcCertificateManager.LoadCertificate(
+        "MyServerCertificate.pfx",
+        password: "password");
+
+// DOC
+// Lifetime in months, default: 600.
 var settings = new OpcCertificateSettings("MyServerAppName") {
     ApplicationUri = new Uri("urn:localhost:MyServerAppName"),
-    Lifetime = 60 // Months, default: 600
+    Lifetime = 60
 };
-
+ 
 settings.DomainNames.Add("localhost");
-
+ 
 var certificate = OpcCertificateManager.CreateCertificate(settings);
 
 // DOC
@@ -174,17 +182,22 @@ server.RegisterAddress("opc.tcp://192.168.0.123:12345/");
 
 // DOC
 server.UnregisterAddress("https://mydomain.com/");
-
+ 
 // server.Address becomes: "opc.tcp://192.168.0.123:12345/"
 server.UnregisterAddress("opc.tcp://localhost:4840/");
 
 // DOC
+server.Security.EndpointPolicies.Add(new OpcSecurityPolicy(
+        OpcSecurityMode.Sign,
+        OpcSecurityAlgorithm.Basic256Sha256));
+
+// DOC
 // Default: OpcAddressScope.IPvX (IPv4 and IPv6)
 server.Binding.AddressScope = OpcAddressScope.IPv4;
-
+ 
 // Default: empty (bind to all network interfaces of the address scope)
 server.Binding.Addresses.Add(IPAddress.Parse("192.168.0.123"));
-
+ 
 // Default: true (only one process can bind to the port)
 server.Binding.UseExclusiveAddress = false;
 
