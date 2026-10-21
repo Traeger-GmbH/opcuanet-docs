@@ -59,7 +59,7 @@ Dim commands As OpcSubscribeDataChange() = New OpcSubscribeDataChange() { _
 Dim subscriptionB As OpcSubscription = client.SubscribeNodes(commands)
 
 'DOC
-Dim filter As OpcDataChangeFilter = New OpcDataChangeFilter()
+Dim filter = New OpcDataChangeFilter()
 filter.Trigger = OpcDataChangeTrigger.StatusValueTimestamp
 
 Dim subscriptionA As OpcSubscription = client.SubscribeDataChange( _
@@ -84,9 +84,9 @@ Dim subscriptionB As OpcSubscription = client.SubscribeNodes(commands)
 
 'DOC
 'Report only changes of the value which exceed 0.5 (absolute).
-Dim filter = New OpcDataChangeFilter(OpcDataChangeTrigger.StatusValue) With {
-    .DeadbandType = OpcDeadbandType.Absolute,
-    .DeadbandValue = 0.5
+Dim filter = New OpcDataChangeFilter(OpcDataChangeTrigger.StatusValue) With { _
+    .DeadbandType = OpcDeadbandType.Absolute, _
+    .DeadbandValue = 0.5 _
 }
 
 Dim subscription As OpcSubscription = client.SubscribeDataChange( _

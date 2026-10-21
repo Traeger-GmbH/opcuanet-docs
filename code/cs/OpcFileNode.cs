@@ -77,8 +77,8 @@ var file = new Opc.UaFx.Client.OpcFileInfo(client, "ns=2;s=Machine/Report");
 
 // DOC
 if (file.Exists) {
-    Console.WriteLine($"File Length: {file.Length}");
-
+    Console.WriteLine("File Length: {0}", file.Length);
+ 
     if (file.CanUserWrite) {
         using (var stream = file.OpenWrite()) {
             // Your code to write via stream.

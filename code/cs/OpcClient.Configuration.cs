@@ -112,17 +112,18 @@ if (!client.CertificateStores.TrustedPeerStore.Contains(e.Certificate))
 
 // DOC
 var configuration = OpcApplicationConfiguration.LoadClientConfigFile("MyClientAppNameConfig.xml");
-
+ 
 // The method returns a null reference in case the file could not be loaded.
 if (configuration == null)
     throw new InvalidOperationException("The client configuration could not be loaded.");
-
+ 
 client.Configuration = configuration;
+
 
 // DOC
 // Default: Value of AssemblyTitleAttribute of entry assembly.
 client.ApplicationName = "MyClientAppName";
-
+ 
 // Default: A null reference to use the URI of the application certificate.
 // The value is used to create a new application certificate.
 client.ApplicationUri = new Uri("urn:localhost:MyClientAppName");
@@ -140,33 +141,45 @@ client.ReconnectTimeout = 5000;         // Default: 10000
 // Default: ".\CertificateStores\App"
 client.CertificateStores.ApplicationStore.Path
         = @"%LocalApplicationData%\MyClientAppName\App Certificates";
-
+ 
 // Default: ".\CertificateStores\Rejected"
 client.CertificateStores.RejectedStore.Path
         = @"%LocalApplicationData%\MyClientAppName\Rejected Certificates";
-
+ 
 // Default: ".\CertificateStores\Trusted"
 client.CertificateStores.TrustedIssuerStore.Path
         = @"%LocalApplicationData%\MyClientAppName\Trusted Issuer Certificates";
-
+ 
 // Default: ".\CertificateStores\Trusted"
 client.CertificateStores.TrustedPeerStore.Path
         = @"%LocalApplicationData%\MyClientAppName\Trusted Peer Certificates";
 
 // DOC
-var certificate = OpcCertificateManager.LoadCertificate("MyClientCertificate.pfx", "password");
+var certificate = OpcCertificateManager.LoadCertificate(
+        "MyClientCertificate.pfx",
+        password: "password");
+
+// DOC
+if (!client.CertificateStores.ApplicationStore.Contains(certificate))
+    client.CertificateStores.ApplicationStore.Add(certificate);
+
+
+// DOC
+client.Security.UseHighLevelEndpoint = true;
 
 // DOC
 client.Security.EndpointPolicy = new OpcSecurityPolicy(
-        OpcSecurityMode.SignAndEncrypt, OpcSecurityAlgorithm.Basic256Sha256);
+        OpcSecurityMode.SignAndEncrypt,
+        OpcSecurityAlgorithm.Basic256Sha256);
 
 // DOC
 client.Security.EndpointPolicy = new OpcSecurityPolicy(
-        OpcSecurityMode.SignAndEncrypt, OpcSecurityAlgorithm.Basic256Sha256);
-
+        OpcSecurityMode.SignAndEncrypt,
+        OpcSecurityAlgorithm.Basic256Sha256);
+ 
 // Use the next better endpoint in case the server does not offer the policy.
 client.Security.AutoUpgradeEndpointPolicy = true;
-
+ 
 client.Connect();
 Console.WriteLine("Used endpoint: {0}", client.UsedEndpoint);
 
@@ -178,7 +191,7 @@ client.Security.CertificateValidationRules
 // DOC
 client.CertificateJudgement += HandleCertificateJudgement;
 ...
-private void HandleCertificateJudgement(
+private static void HandleCertificateJudgement(
         object sender,
         OpcCertificateJudgementEventArgs e)
 {

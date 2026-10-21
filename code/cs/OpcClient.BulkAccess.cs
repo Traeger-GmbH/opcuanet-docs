@@ -1,21 +1,26 @@
 // DOC
-OpcReadNode[] commands = Enumerable.Range(1, 5000)
-        .Select(index => new OpcReadNode($"ns=2;s=Sensors/Sensor{index}"))
-        .ToArray();
+var commands = new OpcReadNode[5000];
+ 
+for (int index = 0; index < commands.Length; index++)
+    commands[index] = new OpcReadNode("ns=2;s=Sensors/Sensor" + (index + 1));
+ 
+IEnumerable<OpcValue> values = client.ReadNodes(commands);
 
-OpcValue[] values = client.ReadNodes(commands).ToArray();
 
 // DOC
-OpcWriteNode[] commands = Enumerable.Range(1, 5000)
-        .Select(index => new OpcWriteNode($"ns=2;s=Setpoints/Setpoint{index}", 0.0))
-        .ToArray();
-
+var commands = new OpcWriteNode[5000];
+ 
+for (int index = 0; index < commands.Length; index++)
+    commands[index] = new OpcWriteNode("ns=2;s=Setpoints/Setpoint" + (index + 1), value: 0.0);
+ 
 OpcStatusCollection results = client.WriteNodes(commands);
-
+ 
 for (int index = 0; index < results.Count; index++) {
     if (results[index].IsBad)
         Console.WriteLine("{0}: {1}", commands[index].NodeId, results[index].Description);
 }
+
+
 
 // DOC
 client.Services.ReadNodes.MaxNodesPerRead = 500;
@@ -26,16 +31,20 @@ client.Services.Browse.MaxNodesPerBrowse = 100;
 uint? nodesPerRead = client.Services.ReadNodes.UsedMaxNodesPerRead;
 
 // DOC
-OpcSubscribeDataChange[] commands = Enumerable.Range(1, 1000)
-        .Select(index => new OpcSubscribeDataChange(
-                $"ns=2;s=Sensors/Sensor{index}",
-                HandleDataChanged))
-        .ToArray();
-
+var commands = new OpcSubscribeDataChange[1000];
+ 
+for (int index = 0; index < commands.Length; index++) {
+    commands[index] = new OpcSubscribeDataChange(
+            "ns=2;s=Sensors/Sensor" + (index + 1),
+            HandleDataChanged);
+}
+ 
 OpcSubscription subscription = client.SubscribeNodes(commands);
 ...
-private void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
+private static void HandleDataChanged(
+        object sender,
+        OpcDataChangeReceivedEventArgs e)
 {
-    var item = (OpcMonitoredItem)sender;
+    OpcMonitoredItem item = (OpcMonitoredItem)sender;
     Console.WriteLine("{0}: {1}", item.NodeId, e.Item.Value);
 }

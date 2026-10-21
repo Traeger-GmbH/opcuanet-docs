@@ -19,10 +19,7 @@ Dim subscription = client.SubscribeEvent("ns=2;s=Machine", filter, _
         If alarm IsNot Nothing Then
             Console.WriteLine( _
                     "{0}: {1}, IsActive = {2}, IsAcked = {3} ({4})", _
-                    alarm.GetType().Name, _
-                    alarm.Message, _
-                    alarm.IsActive, _
-                    alarm.IsAcked, _
-                    alarm.Severity)
+                    alarm.GetType().Name, alarm.Message, alarm.IsActive, alarm.IsAcked, alarm.Severity)
         End If
     End Sub)
+

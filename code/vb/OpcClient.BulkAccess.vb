@@ -1,14 +1,18 @@
 'DOC
-Dim commands As OpcReadNode() = Enumerable.Range(1, 5000) _
-        .Select(Function(index) New OpcReadNode($"ns=2;s=Sensors/Sensor{index}")) _
-        .ToArray()
+Dim commands = New OpcReadNode(4999) {}
 
-Dim values As OpcValue() = client.ReadNodes(commands).ToArray()
+For index As Integer = 0 To commands.Length - 1
+    commands(index) = New OpcReadNode("ns=2;s=Sensors/Sensor" & (index + 1))
+Next
+
+Dim values As IEnumerable(Of OpcValue) = client.ReadNodes(commands)
 
 'DOC
-Dim commands As OpcWriteNode() = Enumerable.Range(1, 5000) _
-        .Select(Function(index) New OpcWriteNode($"ns=2;s=Setpoints/Setpoint{index}", 0.0)) _
-        .ToArray()
+Dim commands = New OpcWriteNode(4999) {}
+
+For index As Integer = 0 To commands.Length - 1
+    commands(index) = New OpcWriteNode("ns=2;s=Setpoints/Setpoint" & (index + 1), value:=0.0)
+Next
 
 Dim results As OpcStatusCollection = client.WriteNodes(commands)
 
@@ -27,15 +31,20 @@ client.Services.Browse.MaxNodesPerBrowse = 100
 Dim nodesPerRead As UInteger? = client.Services.ReadNodes.UsedMaxNodesPerRead
 
 'DOC
-Dim commands As OpcSubscribeDataChange() = Enumerable.Range(1, 1000) _
-        .Select(Function(index) New OpcSubscribeDataChange( _
-                $"ns=2;s=Sensors/Sensor{index}", _
-                AddressOf HandleDataChanged)) _
-        .ToArray()
+Dim commands = New OpcSubscribeDataChange(999) {}
+
+For index As Integer = 0 To commands.Length - 1
+    commands(index) = New OpcSubscribeDataChange( _
+            "ns=2;s=Sensors/Sensor" & (index + 1), _
+            AddressOf HandleDataChanged)
+Next
 
 Dim subscription As OpcSubscription = client.SubscribeNodes(commands)
 ...
-Private Sub HandleDataChanged(ByVal sender As Object, ByVal e As OpcDataChangeReceivedEventArgs)
-    Dim item = CType(sender, OpcMonitoredItem)
+Private Shared Sub HandleDataChanged( _
+        ByVal sender As Object, _
+        ByVal e As OpcDataChangeReceivedEventArgs)
+    Dim item As OpcMonitoredItem = CType(sender, OpcMonitoredItem)
     Console.WriteLine("{0}: {1}", item.NodeId, e.Item.Value)
 End Sub
+

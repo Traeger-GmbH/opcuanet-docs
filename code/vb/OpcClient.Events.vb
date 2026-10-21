@@ -236,13 +236,14 @@ Private Shared Sub HandleLocalEvents( _
     Dim condition = TryCast(e.Event, OpcCondition)
 
     If condition IsNot Nothing AndAlso condition.IsRetained Then
-        Console.Write((If(condition.ClientUserId, "Comment")) & ":")
+        Console.Write(If(condition.ClientUserId, "Comment") & ":")
         Console.WriteLine(condition.Comment)
     End If
 End Sub
 
+
 'DOC
-Private Shared Sub HandleLocalEvents( _
+Private Sub HandleLocalEvents( _
         ByVal sender As Object, _
         ByVal e As OpcEventReceivedEventArgs)
     Dim condition = TryCast(e.Event, OpcDialogCondition)
@@ -256,8 +257,9 @@ Private Shared Sub HandleLocalEvents( _
         For index As Integer = 0 To responseOptions.Length - 1
             Console.Write("      [{0}] = {1}", index, responseOptions(index).Value)
 
-            If index = condition.DefaultResponse Then _
+            If index = condition.DefaultResponse Then
                 Console.Write(" (default)")
+            End If
 
             Console.WriteLine()
         Next
@@ -269,8 +271,9 @@ Private Shared Sub HandleLocalEvents( _
             Console.Write("Enter the number of the option and press Enter to respond: ")
             respond = Console.ReadLine()
 
-            If String.IsNullOrEmpty(respond) _
-                Then Exit Do
+            If String.IsNullOrEmpty(respond) Then
+                Exit Do
+            End If
         Loop While Not Integer.TryParse(respond, respondOption)
 
         condition.Respond(client, respondOption)
@@ -283,10 +286,10 @@ End Sub
 'DOC
 AddHandler client.DialogRequested, AddressOf HandleDialogRequested
 ...
-
 Private Shared Sub HandleDialogRequested( _
         ByVal sender As Object, _
         ByVal e As OpcDialogRequestedEventArgs)
     'Just use the default response, here.
     e.SelectedResponse = e.Dialog.DefaultResponse
 End Sub
+

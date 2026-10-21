@@ -20,6 +20,7 @@ Private Sub Calculate( _
     differenceResult = (a - b) * c
 End Sub
 
+
 Me.methodNode = New OpcMethodNode( _
         Me.folderNode, _
         NameOf(Calculate), _

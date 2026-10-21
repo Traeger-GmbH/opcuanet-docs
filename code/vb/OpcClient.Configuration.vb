@@ -133,9 +133,9 @@ client.SessionTimeout = 30000           'Default: 60000
 client.SessionName = "My Session Name"  'Default: Value of ApplicationName
 
 'DOC
-client.OperationTimeout = 10000          'Default: 120000
-client.DisconnectTimeout = 5000          'Default: 10000
-client.ReconnectTimeout = 5000           'Default: 10000
+client.OperationTimeout = 10000         'Default: 120000
+client.DisconnectTimeout = 5000         'Default: 10000
+client.ReconnectTimeout = 5000          'Default: 10000
 
 'DOC
 'Default: ".\CertificateStores\App"
@@ -155,7 +155,9 @@ client.CertificateStores.TrustedPeerStore.Path _
         = "%LocalApplicationData%\MyClientAppName\Trusted Peer Certificates"
 
 'DOC
-Dim certificate = OpcCertificateManager.LoadCertificate("MyClientCertificate.pfx", "password")
+Dim certificate = OpcCertificateManager.LoadCertificate( _
+        "MyClientCertificate.pfx", _
+        password:="password")
 
 'DOC
 If Not client.CertificateStores.ApplicationStore.Contains(certificate) Then
@@ -167,11 +169,13 @@ client.Security.UseHighLevelEndpoint = True
 
 'DOC
 client.Security.EndpointPolicy = New OpcSecurityPolicy( _
-        OpcSecurityMode.SignAndEncrypt, OpcSecurityAlgorithm.Basic256Sha256)
+        OpcSecurityMode.SignAndEncrypt, _
+        OpcSecurityAlgorithm.Basic256Sha256)
 
 'DOC
 client.Security.EndpointPolicy = New OpcSecurityPolicy( _
-        OpcSecurityMode.SignAndEncrypt, OpcSecurityAlgorithm.Basic256Sha256)
+        OpcSecurityMode.SignAndEncrypt, _
+        OpcSecurityAlgorithm.Basic256Sha256)
 
 'Use the next better endpoint in case the server does not offer the policy.
 client.Security.AutoUpgradeEndpointPolicy = True
@@ -187,7 +191,7 @@ client.Security.CertificateValidationRules _
 'DOC
 AddHandler client.CertificateJudgement, AddressOf HandleCertificateJudgement
 ...
-Private Sub HandleCertificateJudgement( _
+Private Shared Sub HandleCertificateJudgement( _
         ByVal sender As Object, _
         ByVal e As OpcCertificateJudgementEventArgs)
     'The server uses a different certificate than when the connection was established.

@@ -95,6 +95,7 @@ Private Shared Sub HandleDataChanged( _
         e.Item.Value)
 End Sub
 
+
 'DOC
 'Pause and resume the delivery of notifications of the subscription.
 subscription.StopPublishing()
@@ -113,9 +114,9 @@ subscription.ApplyChanges()
 'DOC
 Dim item = New OpcMonitoredItem("ns=2;s=Machine/Job/Speed", OpcAttribute.Value)
 
-item.SamplingInterval = 100                               '0 = fastest rate, -1 = publishing interval
-item.QueueSize = 10                                       'Default: 1000
-item.QueueMode = OpcMonitoredItemQueueMode.DiscardOldest  'Default: DiscardOldest
+item.SamplingInterval = 100     '0 = fastest rate, -1 = publishing interval
+item.QueueSize = 10             'Default: 1000
+item.QueueMode = OpcMonitoredItemQueueMode.DiscardOldest
 
 subscription.AddMonitoredItem(item)
 subscription.ApplyChanges()

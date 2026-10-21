@@ -92,15 +92,15 @@ Dim maxSpeed = client.ReadNodeHistoryProcessed( _
 'DOC
 Dim startTime = New DateTime(2017, 2, 16, 10, 0, 0)
 Dim history = client.ReadNodeHistory( _
-        startTime, CType(Nothing, DateTime?), "ns=2;s=Machine/Job/Speed")
+        startTime, endTime:=Nothing, "ns=2;s=Machine/Job/Speed")
 
 'DOC
-'Read the average value of each hour (3600000 milliseconds) within the time window.
+'Read the average value of each hour within the time window.
 Dim avgSpeedPerHour = client.ReadNodeHistoryProcessed( _
         startTime, _
         endTime, _
         OpcAggregateType.Average, _
-        3600000, _
+        aggregateInterval:=TimeSpan.FromHours(1).TotalMilliseconds, _
         "ns=2;s=Machine/Job/Speed")
 
 'DOC

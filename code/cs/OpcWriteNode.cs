@@ -26,7 +26,7 @@ OpcStatusCollection results = client.WriteNodes(commands);
 // Write the elements with the index 2 to 4 of the array.
 OpcStatus result = client.WriteNode(
         "ns=2;s=Machine/Job/Speeds",
-        new OpcRange(2, 4),
+        new OpcRange(start: 2, end: 4),
         new int[] { 1200, 1300, 1400 });
 
 // DOC

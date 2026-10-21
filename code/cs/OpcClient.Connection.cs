@@ -8,17 +8,17 @@ client.Reconnecting += HandleReconnecting;
 client.Reconnected += HandleReconnected;
 client.BreakDetected += HandleBreakDetected;
 ...
-private void HandleReconnecting(object sender, EventArgs e)
+private static void HandleReconnecting(object sender, EventArgs e)
 {
     Console.WriteLine("Connection lost, trying to reconnect.");
 }
-
-private void HandleReconnected(object sender, EventArgs e)
+ 
+private static void HandleReconnected(object sender, EventArgs e)
 {
     Console.WriteLine("Connection restored using the existing session.");
 }
-
-private void HandleBreakDetected(object sender, EventArgs e)
+ 
+private static void HandleBreakDetected(object sender, EventArgs e)
 {
     Console.WriteLine("Connection lost, no automatic reconnect.");
 }
@@ -26,12 +26,17 @@ private void HandleBreakDetected(object sender, EventArgs e)
 // DOC
 client.KeepAlive.Updated += HandleKeepAliveUpdated;
 ...
-private void HandleKeepAliveUpdated(object sender, EventArgs e)
+private static void HandleKeepAliveUpdated(object sender, EventArgs e)
 {
-    var keepAlive = (OpcClientKeepAlive)sender;
-
-    if (keepAlive.IsActive)
-        Console.WriteLine("Server state: {0}, server time: {1}", keepAlive.ServerState, keepAlive.Time);
-    else
+    OpcClientKeepAlive keepAlive = (OpcClientKeepAlive)sender;
+ 
+    if (keepAlive.IsActive) {
+        Console.WriteLine(
+                "Server state: {0}, server time: {1}",
+                keepAlive.ServerState,
+                keepAlive.Time);
+    }
+    else {
         Console.WriteLine("Keep alive failed: {0}", keepAlive.Status);
+    }
 }

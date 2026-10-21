@@ -34,6 +34,15 @@ client.AddReference( _
 
 'DOC
 client.AddReferences( _
-        New OpcAddReference("ns=2;s=Plant01", "ns=2;s=Machines/MAC01", OpcNodeCategory.Object), _
-        New OpcAddReference("ns=2;s=Plant01", "ns=2;s=Machines/MAC02", OpcNodeCategory.Object), _
-        New OpcAddReference("ns=2;s=Plant02", "ns=2;s=Machines/MAC03", OpcNodeCategory.Object))
+        New OpcAddReference( _
+                "ns=2;s=Plant01", _
+                targetNodeId:="ns=2;s=Machines/MAC01", _
+                targetNodeCategory:=OpcNodeCategory.Object), _
+        New OpcAddReference( _
+                "ns=2;s=Plant01", _
+                targetNodeId:="ns=2;s=Machines/MAC02", _
+                targetNodeCategory:=OpcNodeCategory.Object), _
+        New OpcAddReference( _
+                "ns=2;s=Plant02", _
+                targetNodeId:="ns=2;s=Machines/MAC03", _
+                targetNodeCategory:=OpcNodeCategory.Object))

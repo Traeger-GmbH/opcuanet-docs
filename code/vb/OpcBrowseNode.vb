@@ -68,11 +68,11 @@ For Each childNode In node.Children()
 Next
 
 'DOC
-For Each variableNode In machineNode.Children(OpcNodeCategory.Variable)
+For Each variableNode As OpcNodeInfo In machineNode.Children(OpcNodeCategory.Variable)
     'Your code to operate on each variable node.
 Next
 
-For Each parentNode In jobNode.Parents()
+For Each parentNode As OpcNodeInfo In jobNode.Parents()
     'Your code to operate on each parent node.
 Next
 

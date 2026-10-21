@@ -1,5 +1,5 @@
 'DOC
-Private Shared ReadOnly data As BlockingCollection(Of String) = New BlockingCollection(Of String)()
+Private Shared ReadOnly data As New BlockingCollection(Of String)()
 
 'DOC
 Dim processDataCancellation = New CancellationTokenSource()
@@ -24,14 +24,17 @@ Private Shared Sub HandleDataChanged(ByVal sender As Object, ByVal e As OpcDataC
     data.Add(e.Item.Value.As(Of String)())
 End Sub
 
+
 'DOC
 Private Shared Sub ProcessData(ByVal token As CancellationToken)
     While Not token.IsCancellationRequested
         Try
-            ' Insert your data processing here.
+            'Insert your data processing here.
             Debug.WriteLine(data.Take(token))
         Catch ex As OperationCanceledException
-            ' Can be ignored, because of the while loop will exit the method.
+            'Can be ignored, because of the while loop will exit the method.
         End Try
     End While
 End Sub
+
+

@@ -224,7 +224,7 @@ private static void HandleGlobalEvents(
         OpcEventReceivedEventArgs e)
 {
     var alarm = e.Event as OpcAlarmCondition;
-
+ 
     if (alarm != null)
         Console.WriteLine("Alarm: " + alarm.Message);
 }
@@ -235,7 +235,7 @@ private static void HandleLocalEvents(
         OpcEventReceivedEventArgs e)
 {
     var condition = e.Event as OpcCondition;
-
+ 
     if (condition != null && condition.IsRetained) {
         Console.Write((condition.ClientUserId ?? "Comment") + ":");
         Console.WriteLine(condition.Comment);
@@ -243,39 +243,53 @@ private static void HandleLocalEvents(
 }
 
 // DOC
-private static void HandleLocalEvents(object sender, OpcEventReceivedEventArgs e)
+private void HandleLocalEvents(
+        object sender,
+        OpcEventReceivedEventArgs e)
 {
     var condition = e.Event as OpcDialogCondition;
-
+ 
     if (condition != null && condition.IsActive) {
         Console.WriteLine(condition.Prompt);
         Console.WriteLine("    Options:");
-
+ 
         var responseOptions = condition.ResponseOptions;
-
+ 
         for (int index = 0; index < responseOptions.Length; index++) {
-            Console.Write($"      [{index}] = {responseOptions[index].Value}");
-
+            Console.Write("      [{0}] = {1}", index, responseOptions[index].Value);
+ 
             if (index == condition.DefaultResponse)
                 Console.Write(" (default)");
-
+ 
             Console.WriteLine();
         }
-
+ 
         var respond = string.Empty;
         var respondOption = condition.DefaultResponse;
-
+ 
         do {
             Console.Write("Enter the number of the option and press Enter to respond: ");
             respond = Console.ReadLine();
-
+ 
             if (string.IsNullOrEmpty(respond))
                 break;
         } while (!int.TryParse(respond, out respondOption));
-
+ 
         condition.Respond(client, respondOption);
-
+ 
         // The dialog has been answered, the DialogRequested event is not raised.
         e.Handled = true;
     }
+}
+
+
+// DOC
+client.DialogRequested += HandleDialogRequested;
+...
+private static void HandleDialogRequested(
+        object sender,
+        OpcDialogRequestedEventArgs e)
+{
+    // Just use the default response, here.
+    e.SelectedResponse = e.Dialog.DefaultResponse;
 }

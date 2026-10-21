@@ -59,12 +59,36 @@ OpcSubscribeDataChange[] commands = new OpcSubscribeDataChange[] {
 OpcSubscription subscriptionB = client.SubscribeNodes(commands);
 
 // DOC
+var filter = new OpcDataChangeFilter();
+filter.Trigger = OpcDataChangeTrigger.StatusValueTimestamp;
+ 
+OpcSubscription subscriptionA = client.SubscribeDataChange(
+        "ns=2;s=Machine/IsRunning",
+        filter,
+        HandleDataChanged);
+ 
+// or
+ 
+OpcSubscribeDataChange[] commands = new OpcSubscribeDataChange[] {
+    new OpcSubscribeDataChange(
+            "ns=2;s=Machine/IsRunning",
+            filter,
+            HandleDataChanged),
+    new OpcSubscribeDataChange(
+            "ns=2;s=Machine/Job/Speed",
+            filter,
+            HandleDataChanged)
+};
+ 
+OpcSubscription subscriptionB = client.SubscribeNodes(commands);
+
+// DOC
 // Report only changes of the value which exceed 0.5 (absolute).
 var filter = new OpcDataChangeFilter(OpcDataChangeTrigger.StatusValue) {
     DeadbandType = OpcDeadbandType.Absolute,
     DeadbandValue = 0.5
 };
-
+ 
 OpcSubscription subscription = client.SubscribeDataChange(
         "ns=2;s=Machine/Job/Speed",
         filter,

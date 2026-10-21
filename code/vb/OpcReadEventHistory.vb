@@ -20,7 +20,7 @@ Next
 Using eventNavigator = client.ReadEventHistory( _
         startTime, _
         endTime, _
-        10, _
+        numberOfEvents:=10, _
         "ns=2;s=Machine", _
         filter)
     Do

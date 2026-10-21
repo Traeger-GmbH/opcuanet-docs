@@ -68,12 +68,12 @@ foreach (var childNode in node.Children()) {
 }
 
 // DOC
-foreach (var variableNode in machineNode.Children(OpcNodeCategory.Variable)) {
+foreach (OpcNodeInfo variableNode in machineNode.Children(OpcNodeCategory.Variable)) {
     // Your code to operate on each variable node.
 }
-
-foreach (var parentNode in jobNode.Parents()) {
+ 
+foreach (OpcNodeInfo parentNode in jobNode.Parents()) {
     // Your code to operate on each parent node.
 }
-
+ 
 int speed = jobNode.Child("Speed").AttributeValue<int>(OpcAttribute.Value);

@@ -34,7 +34,7 @@ Dim speed As OpcValue = client.ReadNode("nsu=http://example.com/machine/;s=Machi
 Dim index As Integer = client.Namespaces.ResolveIndex("http://example.com/machine/")
 
 If index >= 0 Then
-    Dim temperatureId = New OpcNodeId("Machine/Temperature", index)
+    Dim temperatureId = New OpcNodeId("Machine/Temperature", namespaceIndex:=index)
     Dim temperature As OpcValue = client.ReadNode(temperatureId)
 End If
 
@@ -43,9 +43,11 @@ Dim registeredNodeIds As OpcNodeIdCollection = client.RegisterNodes( _
         "ns=2;s=Machine/Speed", _
         "ns=2;s=Machine/Temperature")
 
-Dim commands As OpcReadNode() = registeredNodeIds _
-        .Select(Function(nodeId) New OpcReadNode(nodeId)) _
-        .ToArray()
+Dim commands = New OpcReadNode(registeredNodeIds.Count - 1) {}
+
+For index As Integer = 0 To commands.Length - 1
+    commands(index) = New OpcReadNode(registeredNodeIds(index))
+Next
 
 For cycle As Integer = 0 To 9
     client.ReadNodes(commands)
@@ -71,7 +73,8 @@ Dim firstAlarm As OpcNodeInfo = Descendants(machine) _
         .Where(Function(node) node.Category = OpcNodeCategory.Variable) _
         .FirstOrDefault(Function(node) node.Name.Value.StartsWith("Alarm"))
 ...
-Private Shared Iterator Function Descendants(ByVal node As OpcNodeInfo) As IEnumerable(Of OpcNodeInfo)
+Private Shared Iterator Function Descendants( _
+        ByVal node As OpcNodeInfo) As IEnumerable(Of OpcNodeInfo)
     For Each child As OpcNodeInfo In node.Children()
         Yield child
 
@@ -91,7 +94,7 @@ If speed.Status.IsGood Then
 End If
 
 'DOC
-Dim temperatures = { _
+Dim temperatures = New OpcNodeValue(Of Double)() { _
     New OpcNodeValue(Of Double)("ns=2;s=Machine/Temperature1"), _
     New OpcNodeValue(Of Double)("ns=2;s=Machine/Temperature2"), _
     New OpcNodeValue(Of Double)("ns=2;s=Machine/Temperature3") _
@@ -101,7 +104,7 @@ Dim values As Double() = temperatures.Read(client)
 
 'DOC
 Using source = New OpcNodeStream(client, "ns=2;s=Machine/Snapshot")
-    Using target = File.Create("snapshot.bin")
+    Using target = IO.File.Create("snapshot.bin")
         source.CopyTo(target)
     End Using
 End Using
@@ -110,16 +113,16 @@ End Using
 Dim grid = New Double(1, 2) {{1, 2, 3}, {4, 5, 6}}
 client.WriteNode("ns=2;s=Machine/Grid", grid)
 
-Dim values = CType(client.ReadNode("ns=2;s=Machine/Grid").Value, Double(,))
+Dim values As Double(,) = CType(client.ReadNode("ns=2;s=Machine/Grid").Value, Double(,))
 Dim value As Double = values(1, 2)
 
 'DOC
-Dim nodeIds As OpcNodeId() = {"ns=2;s=Machine/Speed", "ns=2;s=Machine/Temperature"}
+Dim nodeIds = New OpcNodeId() {"ns=2;s=Machine/Speed", "ns=2;s=Machine/Temperature"}
 
 Using history = client.ReadNodesHistory( _
         DateTime.UtcNow.AddHours(-1), _
         DateTime.UtcNow, _
-        100, _
+        numberOfValues:=100, _
         nodeIds)
     For Each value As OpcHistoryValue In history(nodeIds(0))
         Console.WriteLine("{0}: {1}", value.Timestamp, value.Value)
@@ -127,11 +130,12 @@ Using history = client.ReadNodesHistory( _
 End Using
 
 'DOC
-Dim history As IDictionary(Of OpcNodeId, IEnumerable(Of OpcHistoryValue)) = client.ReadNodesHistory( _
-        DateTime.UtcNow.AddHours(-1), _
-        DateTime.UtcNow, _
-        "ns=2;s=Machine/Speed", _
-        "ns=2;s=Machine/Temperature")
+Dim history As IDictionary(Of OpcNodeId, IEnumerable(Of OpcHistoryValue)) = _
+        client.ReadNodesHistory( _
+                DateTime.UtcNow.AddHours(-1), _
+                DateTime.UtcNow, _
+                "ns=2;s=Machine/Speed", _
+                "ns=2;s=Machine/Temperature")
 
 For Each entry In history
     Console.WriteLine("{0}: {1} values", entry.Key, entry.Value.Count())

@@ -176,7 +176,7 @@ End Structure
 
 
 'DOC
-Using client As New OpcClient("opc.tcp://localhost:4840")
+Using client = New OpcClient("opc.tcp://localhost:4840")
     client.NodeSet = OpcNodeSet.Load("..\Resources\MyServersNodeSet.xml")
     client.UseDynamic = True
 
@@ -211,6 +211,7 @@ Friend Structure MyDataTypeWithOptionalFields
     Public OptionalField3 As Byte
 End Structure
 
+
 'DOC
 <OpcDataType("<NodeId of DataType Node>")>
 <OpcDataTypeEncoding( _
@@ -229,6 +230,7 @@ Friend Structure MyDataTypeWithConditionalFields
     <OpcDataTypeMemberSwitch("FieldE", 42, OpcMemberSwitchOperator.GreaterThan)>
     Public OptionalField5 As String
 End Structure
+
 
 'DOC
 <OpcDataType("<NodeId of DataType Node>")>

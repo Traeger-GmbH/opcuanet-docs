@@ -24,4 +24,6 @@ Dim jobDisplayNames As IEnumerable(Of OpcValue) = client.ReadNodes(commands)
 
 'DOC
 'Read the elements with the index 2 to 4 of the array.
-Dim speeds As OpcValue = client.ReadNode("ns=2;s=Machine/Job/Speeds", New OpcRange(2, 4))
+Dim speeds As OpcValue = client.ReadNode( _
+        "ns=2;s=Machine/Job/Speeds", _
+        New OpcRange(start:=2, [end]:=4))

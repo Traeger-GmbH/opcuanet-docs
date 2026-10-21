@@ -10,7 +10,7 @@ Else
 End If
 
 'DOC
-Dim result As OpcStatus = client.WriteNode("ns=2;s=Machine/Setpoint", 42.0)
+Dim result As OpcStatus = client.WriteNode("ns=2;s=Machine/Setpoint", value:=42.0)
 
 If result.Code = OpcStatusCode.BadUserAccessDenied Then
     Console.WriteLine("The user is not allowed to write the setpoint.")
@@ -28,11 +28,14 @@ Catch ex As OpcException
     Console.WriteLine("Call failed: {0} ({1})", ex.Code, ex.Message)
 End Try
 
+
 'DOC
 Try
     client.Connect()
-Catch ex As OpcException When ex.Code = OpcStatusCode.BadSecurityChecksFailed
-    Console.WriteLine("No endpoint matches the security settings of the client.")
 Catch ex As OpcException
-    Console.WriteLine("Connect failed: {0}", ex.Code)
+    If ex.Code = OpcStatusCode.BadSecurityChecksFailed Then
+        Console.WriteLine("No endpoint matches the security settings of the client.")
+    Else
+        Console.WriteLine("Connect failed: {0}", ex.Code)
+    End If
 End Try

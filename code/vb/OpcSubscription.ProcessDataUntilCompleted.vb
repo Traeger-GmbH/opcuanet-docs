@@ -1,5 +1,5 @@
 'DOC
-Private Shared ReadOnly data As BlockingCollection(Of String) = New BlockingCollection(Of String)()
+Private Shared ReadOnly data As New BlockingCollection(Of String)()
 
 'DOC
 Dim processDataThread = New Thread(AddressOf ProcessData)
@@ -22,12 +22,14 @@ Private Shared Sub HandleDataChanged(ByVal sender As Object, ByVal e As OpcDataC
     data.Add(e.Item.Value.As(Of String)())
 End Sub
 
+
 'DOC
 Private Shared Sub ProcessData()
-    ' Using 'GetConsumingEnumerable' removes an item from the collection, consumes it through
-    ' the For Each loop and blocks until another item is/has being added to collection or
-    ' 'CompleteAdding' is used to signal the end of the data processing.
-    For Each item In data.GetConsumingEnumerable()
-        ' Insert your data processing here.
+    'Using 'GetConsumingEnumerable' removes an item from the collection, consumes it through
+    'the For Each loop and blocks until another item is/has being added to collection or
+    ''CompleteAdding' is used to signal the end of the data processing.
+    For Each item As String In data.GetConsumingEnumerable()
+        'Insert your data processing here.
     Next
 End Sub
+

@@ -176,6 +176,18 @@ internal struct MyDataTypeWithOptionalFields
 }
 
 // DOC
+using (var client = new OpcClient("opc.tcp://localhost:4840")) {
+    client.NodeSet = OpcNodeSet.Load(@"..\Resources\MyServersNodeSet.xml");
+    client.UseDynamic = true;
+ 
+    client.Connect();
+    dynamic staff = client.ReadNode("ns=2;s=Machine/Operator").Value;
+ 
+    Console.WriteLine("Name: {0}", staff.Name);
+    Console.WriteLine("Staff ID: {0}", staff.ID);
+}
+
+// DOC
 [OpcDataType("<NodeId of DataType Node>")]
 [OpcDataTypeEncoding(
         "<NodeId of Binary Encoding Node>",
@@ -186,15 +198,15 @@ internal struct MyDataTypeWithOptionalFields
     public short FieldA;
     public int FieldB;
     public string FieldC;
-
+ 
     // Nullables are treat as optional fields by default.
     // Existence-Indicator-Bit is Bit0 in the encoding mask.
     public uint? OptionalField1;
-
+ 
     // Existence-Indicator-Bit is Bit1 (the next unused bit) in the encoding mask.
     [OpcDataTypeMemberSwitch]
     public int OptionalField2;
-
+ 
     // Existence-Indicator-Bit is Bit3 (bit 2 is unused) in the encoding mask.
     [OpcDataTypeMemberSwitch(bit: 3)]
     public byte OptionalField3;
@@ -208,13 +220,13 @@ internal struct MyDataTypeWithOptionalFields
 internal struct MyDataTypeWithConditionalFields
 {
     public bool FieldD;
-
+ 
     // 'OptionalField4' exists only if the value of 'FieldD' is equals 'true'.
     [OpcDataTypeMemberSwitch("FieldD")]
     public string OptionalField4;
-
+ 
     public int FieldE;
-
+ 
     // 'OptionalField5' exists only if the value of 'FieldE' is greater than '42'.
     [OpcDataTypeMemberSwitch("FieldE", value: 42, @operator: OpcMemberSwitchOperator.GreaterThan)]
     public string OptionalField5;
@@ -229,8 +241,9 @@ internal class MyUnionDataType : IOpcUnion
 {
     // 0 = no field, 1 = 'Number', 2 = 'Text'.
     public uint SwitchValue { get; set; }
-
+ 
     public int Number { get; set; }
-
+ 
     public string Text { get; set; }
 }
+

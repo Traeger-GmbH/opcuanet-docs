@@ -121,20 +121,27 @@ OpcAddNodeResult result = client.AddNode(new OpcAddObjectNode(
         shiftTimeType.Create("Late")));
 
 // DOC
+if (result.IsGood)
+    Console.WriteLine("NodeId of 'Jobs': {0}", result.NodeId);
+else
+    Console.WriteLine("Failed to add node: {0}", result.Description);
+
+
+// DOC
 // Declare Job Type
 var jobType = OpcAddObjectNode.OfType(OpcNodeId.Parse("ns=2;s=Types/JobType"));
-
+ 
 client.AddNodes(
         jobType.Create("JOB001", nodeId: OpcNodeId.Null, parentNodeId: jobsNodeId),
         jobType.Create("JOB002", nodeId: OpcNodeId.Null, parentNodeId: jobsNodeId),
         jobType.Create("JOB003", nodeId: OpcNodeId.Null, parentNodeId: jobsNodeId),
         jobType.Create("JOB004", nodeId: OpcNodeId.Null, parentNodeId: jobsNodeId));
-
+ 
 var scheduleNodeId = OpcNodeId.Parse("ns=2;s=Machine/JOB002/Schedule");
-
+ 
 // Declare Shift Time Type
 var shiftTimeType = OpcAddVariableNode.OfType(OpcNodeId.Parse("ns=2;s=Types/ShiftTimeType"));
-
+ 
 OpcAddNodeResult result = client.AddNode(new OpcAddObjectNode(
         "ShiftPlanning",
         nodeId: OpcNodeId.Null,

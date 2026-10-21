@@ -1,7 +1,7 @@
 // DOC
 var client = new OpcClient("opc.tcp://localhost:4840/");
 client.ReconnectTimeout = 5000;
-
+ 
 while (true) {
     try {
         client.Connect();
@@ -9,7 +9,7 @@ while (true) {
     }
     catch (OpcException ex) {
         Console.WriteLine("Connect failed: {0}", ex.Code);
-        Thread.Sleep(5000);
+        Thread.Sleep(TimeSpan.FromSeconds(5));
     }
 }
 
@@ -19,7 +19,9 @@ OpcSubscription subscription = client.SubscribeDataChange(
         "ns=2;s=Machine/Speed",
         HandleDataChanged);
 ...
-private void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
+private static void HandleDataChanged(
+        object sender,
+        OpcDataChangeReceivedEventArgs e)
 {
     Console.WriteLine("Speed: {0}", e.Item.Value);
 }
@@ -27,10 +29,12 @@ private void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
 // DOC
 client.StateChanged += HandleStateChanged;
 ...
-private void HandleStateChanged(object sender, OpcClientStateChangedEventArgs e)
+private static void HandleStateChanged(
+        object sender,
+        OpcClientStateChangedEventArgs e)
 {
     Console.WriteLine("{0} -> {1}", e.OldState, e.NewState);
-
+ 
     if (e.OldState == OpcClientState.Reconnecting && e.NewState == OpcClientState.Connected)
         Console.WriteLine("New session, the subscriptions have been recreated.");
 }
@@ -40,7 +44,7 @@ client.Connected += HandleConnected;
 ...
 private OpcNodeId[] nodeIds = { "ns=2;s=Machine/Speed", "ns=2;s=Machine/Temperature" };
 private OpcNodeIdCollection registeredNodeIds;
-
+ 
 private void HandleConnected(object sender, EventArgs e)
 {
     // Registered node ids are only valid in the session they have been registered in.
@@ -51,13 +55,13 @@ private void HandleConnected(object sender, EventArgs e)
 client.ReconnectTimeout = 0;
 client.BreakDetected += HandleBreakDetected;
 ...
-private void HandleBreakDetected(object sender, EventArgs e)
+private static void HandleBreakDetected(object sender, EventArgs e)
 {
-    var client = (OpcClient)sender;
-
+    OpcClient client = (OpcClient)sender;
+ 
     // Decide on your own when and how to connect again.
     Task.Run(() => {
-        Thread.Sleep(10000);
+        Thread.Sleep(TimeSpan.FromSeconds(10));
         client.Connect();
     });
 }

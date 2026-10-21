@@ -16,9 +16,10 @@ client.ApplicationName = "MyDifferentClientAppName"
 client.ApplicationUri = New Uri("<ApplicationUri>")
 
 'DOC
-Dim settings = New OpcCertificateSettings("MyClientAppName") With {
-    .ApplicationUri = New Uri("urn:localhost:MyClientAppName"),
-    .Lifetime = 60 'Months, default: 600
+'The lifetime is specified in months, the default is 600.
+Dim settings = New OpcCertificateSettings("MyClientAppName") With { _
+    .ApplicationUri = New Uri("urn:localhost:MyClientAppName"), _
+    .Lifetime = 60 _
 }
 
 settings.DomainNames.Add("localhost")
