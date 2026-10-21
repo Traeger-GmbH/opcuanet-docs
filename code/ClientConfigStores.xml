@@ -1,0 +1,23 @@
+﻿<SecurityConfiguration>
+  <ApplicationCertificate>
+    <StoreType>Directory</StoreType>
+    <StorePath>.\CertificateStores\App</StorePath>
+    <SubjectName>CN=MyClient, C=US, S=Arizona, O=YourCompany, DC=localhost</SubjectName>
+    <!-- <Thumbprint>3a35fb798fc6dee8a7e7e4652b0e28fc14c6ee0f</Thumbprint> -->
+  </ApplicationCertificate>
+
+  <TrustedIssuerCertificates>
+    <StoreType>Directory</StoreType>
+    <StorePath>.\CertificateStores\Trusted</StorePath>
+  </TrustedIssuerCertificates>
+
+  <TrustedPeerCertificates>
+    <StoreType>Directory</StoreType>
+    <StorePath>.\CertificateStores\Trusted</StorePath>
+  </TrustedPeerCertificates>
+
+  <RejectedCertificateStore>
+    <StoreType>Directory</StoreType>
+    <StorePath>.\CertificateStores\Rejected</StorePath>
+  </RejectedCertificateStore>
+</SecurityConfiguration>
