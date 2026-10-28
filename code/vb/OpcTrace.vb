@@ -18,10 +18,7 @@ Private Shared Sub HandleTraceEvent( _
         ByVal e As TraceEventArgs)
     If (e.TraceMask And (Utils.TraceMasks.Error Or Utils.TraceMasks.Security)) = 0 Then Return
 
-    Console.WriteLine( _
-            "{0} {1}", _
-            FormatTraceText(e), _
-            e.Exception?.Message)
+    Console.WriteLine(FormatTraceText(e))
 End Sub
 
 Private Shared Function FormatTraceText(ByVal e As TraceEventArgs) As String

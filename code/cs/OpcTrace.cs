@@ -20,10 +20,7 @@ private static void HandleTraceEvent(
     if ((e.TraceMask & (Utils.TraceMasks.Error | Utils.TraceMasks.Security)) == 0)
         return;
 
-    Console.WriteLine(
-            "{0} {1}",
-            FormatTraceText(e),
-            e.Exception?.Message);
+    Console.WriteLine(FormatTraceText(e));
 }
 
 private static string FormatTraceText(TraceEventArgs e)
