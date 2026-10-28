@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<OpcApplicationConfiguration
+    xmlns="http://opcfoundation.org/UA/SDK/Configuration.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ua="http://opcfoundation.org/UA/2008/02/Types.xsd"
+    schemaLocation="AppConfig.xsd">
+  <ApplicationName>MyClientAppName</ApplicationName>
+  <ApplicationUri>http://my.clientapp.uri/</ApplicationUri>
+  <ApplicationType>Client_1</ApplicationType>
+
+  <SecurityConfiguration>
+    <ApplicationCertificate>
+      <StoreType>Directory</StoreType>
+      <StorePath>%LocalApplicationData%\MyClientAppName\App Certificates</StorePath>
+      <SubjectName>MyClientAppName</SubjectName>
+    </ApplicationCertificate>
+  </SecurityConfiguration>
+
+  <!-- TransportQuotas -->
+
+  <ClientConfiguration />
+
+  <!-- DiscoveryServerConfiguration, Extensions -->
+
+  <!--
+    TraceConfiguration is a child of the root element. It follows ServerConfiguration,
+    ClientConfiguration, DiscoveryServerConfiguration and Extensions and precedes
+    DisableHiResClock. The elements of the root are read in this order only: at another
+    position the trace configuration is ignored without notice or the file is not loaded.
+    TraceMasks 643 = Error (0x1) | Information (0x2) | StartStop (0x80) | Security (0x200).
+  -->
+  <TraceConfiguration>
+    <OutputFilePath>%LocalApplicationData%\MyClientAppName\Logs\opcua-trace.log</OutputFilePath>
+    <DeleteOnLoad>true</DeleteOnLoad>
+    <TraceMasks>643</TraceMasks>
+  </TraceConfiguration>
+</OpcApplicationConfiguration>
