@@ -65,3 +65,6 @@ Private Sub HandleCertificateRequested( _
             certificatePassword)
 End Sub
 
+
+'DOC
+client.ChangeUserIdentity(New OpcClientIdentity("userName", "password"))

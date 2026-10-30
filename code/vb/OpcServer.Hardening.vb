@@ -160,3 +160,22 @@ Private Shared Sub HandleCriticalRequest( _
                 e.Context.SessionId)
     End If
 End Sub
+
+'DOC
+server.Security.IsAuditingEnabled = True
+
+'DOC
+AddHandler server.SessionActivationFailed, AddressOf HandleSessionActivationFailed
+...
+Private Shared Sub HandleSessionActivationFailed( _
+        ByVal sender As Object, _
+        ByVal e As OpcSessionActivationFailedEventArgs)
+    Dim userName = TryCast(e.Identity, OpcUserNameIdentityTokenInfo)
+
+    Console.WriteLine( _
+            "{0:u} logon rejected ({1}): {2}", _
+            DateTime.UtcNow, _
+            e.Status.Code, _
+            If(userName IsNot Nothing, userName.UserName, "no user name"))
+End Sub
+

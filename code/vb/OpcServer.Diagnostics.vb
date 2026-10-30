@@ -59,3 +59,7 @@ For Each session As OpcSession In server.GetSessions()
         End If
     Next
 Next
+
+'DOC
+server.Diagnostics.IsEnabled = True
+server.Start()

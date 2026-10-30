@@ -135,7 +135,7 @@ client.SessionName = "My Session Name"; // Default: Value of ApplicationName
 // DOC
 client.OperationTimeout = 10000;        // Default: 120000
 client.DisconnectTimeout = 5000;        // Default: 10000
-client.ReconnectTimeout = 5000;         // Default: 10000
+client.ReconnectInterval = 5000;        // Default: 10000
 
 // DOC
 // Default: ".\CertificateStores\App"

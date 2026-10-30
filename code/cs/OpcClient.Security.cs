@@ -65,3 +65,6 @@ private void HandleCertificateRequested(
             certificatePath,
             certificatePassword);
 }
+
+// DOC
+client.ChangeUserIdentity(new OpcClientIdentity("userName", "password"));

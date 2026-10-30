@@ -1,7 +1,8 @@
 // DOC
 client.UseBreakDetection = true;    // Default: true
 client.KeepAlive.Interval = 2000;   // Default: 5000
-client.ReconnectTimeout = 5000;     // Default: 10000
+client.ReconnectInterval = 5000;    // Default: 10000
+client.MaxReconnectDuration = 0;    // Default: 0 (unlimited)
 
 // DOC
 client.Reconnecting += HandleReconnecting;

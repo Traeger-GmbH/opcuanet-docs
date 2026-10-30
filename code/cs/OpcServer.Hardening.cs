@@ -160,3 +160,22 @@ private static void HandleCriticalRequest(object sender, OpcRequestValidatingEve
                 e.Context.SessionId);
     }
 }
+
+// DOC
+server.Security.IsAuditingEnabled = true;
+
+// DOC
+server.SessionActivationFailed += HandleSessionActivationFailed;
+...
+private static void HandleSessionActivationFailed(
+        object sender,
+        OpcSessionActivationFailedEventArgs e)
+{
+    var userName = e.Identity as OpcUserNameIdentityTokenInfo;
+ 
+    Console.WriteLine(
+            "{0:u} logon rejected ({1}): {2}",
+            DateTime.UtcNow,
+            e.Status.Code,
+            userName != null ? userName.UserName : "no user name");
+}

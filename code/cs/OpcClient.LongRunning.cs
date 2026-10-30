@@ -1,6 +1,6 @@
 // DOC
 var client = new OpcClient("opc.tcp://localhost:4840/");
-client.ReconnectTimeout = 5000;
+client.ReconnectInterval = 5000;
  
 while (true) {
     try {
@@ -52,7 +52,7 @@ private void HandleConnected(object sender, EventArgs e)
 }
 
 // DOC
-client.ReconnectTimeout = 0;
+client.ReconnectInterval = 0;
 client.BreakDetected += HandleBreakDetected;
 ...
 private static void HandleBreakDetected(object sender, EventArgs e)

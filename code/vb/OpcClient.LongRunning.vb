@@ -1,6 +1,6 @@
 'DOC
 Dim client = New OpcClient("opc.tcp://localhost:4840/")
-client.ReconnectTimeout = 5000
+client.ReconnectInterval = 5000
 
 Do
     Try
@@ -52,7 +52,7 @@ End Sub
 
 
 'DOC
-client.ReconnectTimeout = 0
+client.ReconnectInterval = 0
 AddHandler client.BreakDetected, AddressOf HandleBreakDetected
 ...
 Private Shared Sub HandleBreakDetected(ByVal sender As Object, ByVal e As EventArgs)

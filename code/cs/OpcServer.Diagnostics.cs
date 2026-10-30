@@ -59,3 +59,7 @@ foreach (OpcSession session in server.GetSessions()) {
         }
     }
 }
+
+// DOC
+server.Diagnostics.IsEnabled = true;
+server.Start();
